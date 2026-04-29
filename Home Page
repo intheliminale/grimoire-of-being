@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>In The Liminale — Grimoire of Being</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black:    #080706;
+      --deep:     #110f0c;
+      --bark:     #1e1a15;
+      --gold:     #C2AF70;
+      --gold-dim: #8a7a4a;
+      --sage:     #6D785A;
+      --sage-lt:  #9aab85;
+      --tan:      #AA8B69;
+      --dust:     #d4b896;
+      --ash:      #6a6255;
+      --mist:     #c8bfb0;
+      --ivory:    #ede8df;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--black);
+      color: var(--mist);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 17px;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── GRAIN OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4rem 2rem;
+      position: relative;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, #2a1f0e44 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 20% 80%, #1a2a1544 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 80% 90%, #1a150a33 0%, transparent 60%),
+        var(--black);
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(to bottom, transparent, var(--black));
+      pointer-events: none;
+    }
+
+    .sigil {
+      font-size: 2.2rem;
+      color: var(--gold-dim);
+      letter-spacing: 0.5rem;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 1.2s ease forwards 0.2s;
+    }
+
+    .hero-name {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2.8rem, 8vw, 6rem);
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      color: var(--ivory);
+      line-height: 1.1;
+      opacity: 0;
+      animation: fadeUp 1.2s ease forwards 0.5s;
+    }
+
+    .hero-name span {
+      display: block;
+      font-size: 0.38em;
+      letter-spacing: 0.5em;
+      color: var(--gold);
+      font-weight: 400;
+      margin-top: 0.8rem;
+      text-transform: uppercase;
+    }
+
+    .hero-sub {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--ash);
+      margin-top: 2rem;
+      letter-spacing: 0.05em;
+      opacity: 0;
+      animation: fadeUp 1.2s ease forwards 0.9s;
+    }
+
+    .hero-rule {
+      width: 160px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+      margin: 2.5rem auto;
+      opacity: 0;
+      animation: fadeUp 1.2s ease forwards 1.1s;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--ash);
+      opacity: 0;
+      animation: fadeUp 1s ease forwards 2s, pulse 3s ease-in-out infinite 3s;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(8,7,6,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #2a2318;
+      padding: 0.9rem 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ash);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    nav a:hover { color: var(--gold); }
+
+    /* ── SECTIONS ── */
+    section {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+
+    .section-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 0.8rem;
+    }
+
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 400;
+      color: var(--ivory);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.06em;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #2e2820, transparent);
+      margin: 1.5rem 0 2.5rem;
+    }
+
+    /* ── CORE PLACEMENTS GRID ── */
+    .placements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1px;
+      background: #1a1610;
+      border: 1px solid #1a1610;
+    }
+
+    .placement-card {
+      background: var(--deep);
+      padding: 1.4rem 1.2rem;
+      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .placement-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 2px;
+      height: 0;
+      background: var(--gold);
+      transition: height 0.4s ease;
+    }
+
+    .placement-card:hover { background: #161210; }
+    .placement-card:hover::before { height: 100%; }
+
+    .placement-body { font-size: 0.8rem; letter-spacing: 0.06em; color: var(--ash); text-transform: uppercase; margin-bottom: 0.3rem; }
+    .placement-sign { font-family: 'Cinzel', serif; font-size: 1.05rem; color: var(--ivory); margin-bottom: 0.15rem; }
+    .placement-detail { font-size: 0.82rem; color: var(--gold-dim); font-style: italic; }
+
+    /* ── STELLIUM BLOCK ── */
+    .stellium {
+      border: 1px solid #2a2318;
+      padding: 2rem;
+      margin: 2rem 0;
+      position: relative;
+      background: linear-gradient(135deg, #0e0b08, #110f0a);
+    }
+
+    .stellium::before {
+      content: attr(data-label);
+      position: absolute;
+      top: -0.6rem;
+      left: 1.5rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: var(--black);
+      padding: 0 0.8rem;
+    }
+
+    .stellium p {
+      font-style: italic;
+      color: var(--mist);
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+
+    .stellium-planets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+
+    .planet-tag {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: var(--gold-dim);
+      border: 1px solid #2a2318;
+      padding: 0.25rem 0.7rem;
+    }
+
+    /* ── ASTEROIDS ── */
+    .asteroid-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .asteroid-card {
+      border: 1px solid #1e1a14;
+      padding: 1.2rem 1.4rem;
+      background: var(--deep);
+      transition: border-color 0.3s;
+    }
+
+    .asteroid-card:hover { border-color: var(--gold-dim); }
+
+    .asteroid-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.2rem;
+    }
+
+    .asteroid-pos {
+      font-size: 0.78rem;
+      color: var(--ash);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .asteroid-meaning {
+      font-style: italic;
+      font-size: 0.88rem;
+      color: var(--mist);
+      line-height: 1.6;
+    }
+
+    /* ── TAROT ── */
+    .tarot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1px;
+      background: #1a1610;
+      border: 1px solid #1a1610;
+    }
+
+    .tarot-card {
+      background: var(--deep);
+      padding: 1.2rem;
+      text-align: center;
+      transition: background 0.3s;
+    }
+    .tarot-card:hover { background: #121009; }
+
+    .tarot-planet {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ash);
+      margin-bottom: 0.4rem;
+    }
+
+    .tarot-glyph {
+      font-size: 1.8rem;
+      margin-bottom: 0.4rem;
+      line-height: 1;
+    }
+
+    .tarot-card-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      color: var(--gold);
+      letter-spacing: 0.08em;
+      line-height: 1.4;
+    }
+
+    /* ── NUMEROLOGY ── */
+    .num-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1px;
+      background: #1a1610;
+      border: 1px solid #1a1610;
+      margin-bottom: 2rem;
+    }
+
+    .num-cell {
+      background: var(--deep);
+      flex: 1;
+      min-width: 140px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+    }
+
+    .num-number {
+      font-family: 'Cinzel', serif;
+      font-size: 3rem;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+
+    .num-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ash);
+      margin-bottom: 0.5rem;
+    }
+
+    .num-meaning {
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--mist);
+    }
+
+    /* ── RITUAL ANCHORS ── */
+    .anchor-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .anchor-list li {
+      border-left: 2px solid var(--sage);
+      padding: 0.8rem 1rem;
+      background: var(--deep);
+      font-size: 0.92rem;
+      color: var(--mist);
+    }
+
+    .anchor-list li strong {
+      display: block;
+      font-family: 'Cinzel', serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--sage-lt);
+      margin-bottom: 0.3rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      border-top: 1px solid #1a1610;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ash);
+    }
+
+    footer .mark {
+      font-family: 'Cinzel', serif;
+      color: var(--gold-dim);
+      display: block;
+      font-size: 1rem;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.6rem;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50%       { opacity: 0.8; }
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 600px) {
+      nav { gap: 1.2rem; }
+      .placements-grid { grid-template-columns: repeat(2, 1fr); }
+      .tarot-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+<header class="hero">
+  <div class="sigil">☽ ♄ ♏ ☿ ♅</div>
+  <h1 class="hero-name">
+    In The Liminale
+    <span>Grimoire of Being</span>
+  </h1>
+  <p class="hero-sub">born at the threshold · existing between worlds</p>
+  <div class="hero-rule"></div>
+  <p class="scroll-hint">↓ descend ↓</p>
+</header>
+
+<!-- ═══════════════════════════════ NAV ═══════════════════════════════ -->
+<nav>
+  <a href="#chart">Natal Chart</a>
+  <a href="#stellia">Stellia</a>
+  <a href="#asteroids">Asteroids</a>
+  <a href="#tarot">Tarot</a>
+  <a href="#numerology">Numerology</a>
+  <a href="#anchors">Ritual Timing</a>
+</nav>
+
+<!-- ═══════════════════════════════ NATAL CHART ═══════════════════════════════ -->
+<section id="chart">
+  <p class="section-label">The Foundation</p>
+  <h2 class="section-title">Core Natal Placements</h2>
+  <p style="font-style:italic; color:var(--ash); margin-bottom:1.5rem; font-size:0.95rem;">February 6, 1992 · 6:42 AM EST · Detroit, MI · Placidus Houses</p>
+  <div class="divider"></div>
+
+  <div class="placements-grid">
+    <div class="placement-card">
+      <div class="placement-body">Ascendant</div>
+      <div class="placement-sign">Capricorn</div>
+      <div class="placement-detail">25°54' · Saturn-ruled</div>
+    </div>
+    <div class="placement-card">
+      <div class="placement-body">Sun</div>
+      <div class="placement-sign">Aquarius</div>
+      <div class="placement-detail">16°56' · 1st House</div>
+    </div>
+    <div class="placement-card">
+      <div class="placement-body">Moon</div>
+      <div class="placement-sign">Pisces</div>
+      <div class="placement-detail">16°29' · 2nd House</div>
+    </div>
+    <div class="placement-card">
+      <div class="placement-body">Mercury</div>
+      <div class="placement-sign">Aquarius</div>
+      <div class="placement-detail">12°37' · 1st House</div>
+    </div>
+    <div class="placement-card">
+      <div class="placement-body">Venus</div>
+      <div class="placement-sign">Capricorn</div>
+      <div class="placement-detail">14°57' · 12th House</div>
+    </div>
+    <div class="placement-card">
+      <div class="placement-body">Mars</div>
+      <div class="placement-sign">Capricorn</div>
+      <div class="placement-detail">21°04' · 12th House</div>
+    </div>
+    <div class="placement-card">
+      <div class="placement-body">Jupiter</div>
+      <div class="placement-sign">Virgo ℞</div>
+      <div class="placement-detail">12°27' · 7th House</div>
+    </div>
+    <div class="placement-card">
+      <div class="placement-body">Saturn</div>
+      <div class="placement-sign">Aquarius</div>
+      <div class="placement-detail">10°08' · 1st House</div>
+    </div>
+    <div class="placement-card">
+      <div class="placement-body">Uranus</div>
+      <div class="placement-sign">Capricorn</div>
+      <div class="placement-detail">15°47' · 12th House</div>
+    </div>
+    <div class="placement-card">
+      <div class="placement-body">Neptune</div>
+      <div class="placement-sign">Capricorn</div>
+      <div class="placement-detail">17°33' · 12th House</div>
+    </div>
+    <div class="placement-card">
+      <div class="placement-body">Pluto</div>
+      <div class="placement-sign">Scorpio</div>
+      <div class="placement-detail">22°51' · 10th House</div>
+    </div>
+    <div class="placement-card">
+      <div class="placement-body">North Node</div>
+      <div class="placement-sign">Capricorn ℞</div>
+      <div class="placement-detail">7°52' · 12th House</div>
+    </div>
+    <div class="placement-card">
+      <div class="placement-body">Lilith (BM)</div>
+      <div class="placement-sign">Aquarius</div>
+      <div class="placement-detail">1°45' · 1st House</div>
+    </div>
+    <div class="placement-card">
+      <div class="placement-body">Chiron</div>
+      <div class="placement-sign">Leo ℞</div>
+      <div class="placement-detail">5°44' · 7th House</div>
+    </div>
+    <div class="placement-card">
+      <div class="placement-body">Midheaven (MC)</div>
+      <div class="placement-sign">Scorpio</div>
+      <div class="placement-detail">20°45'</div>
+    </div>
+    <div class="placement-card">
+      <div class="placement-body">Part of Fortune</div>
+      <div class="placement-sign">Sagittarius</div>
+      <div class="placement-detail">26°21' · 11th House</div>
+    </div>
+  </div>
+
+  <!-- Element Balance -->
+  <div style="margin-top: 2.5rem;">
+    <p class="section-label">Elemental Balance</p>
+    <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.8rem;">
+      <div style="flex:1; min-width:120px; background:var(--deep); border:1px solid #1a1610; padding:1rem; text-align:center;">
+        <div style="font-family:'Cinzel',serif; font-size:1.6rem; color:var(--tan);">15</div>
+        <div style="font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--ash);">Earth</div>
+      </div>
+      <div style="flex:1; min-width:120px; background:var(--deep); border:1px solid #1a1610; padding:1rem; text-align:center;">
+        <div style="font-family:'Cinzel',serif; font-size:1.6rem; color:var(--mist);">6</div>
+        <div style="font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--ash);">Air</div>
+      </div>
+      <div style="flex:1; min-width:120px; background:var(--deep); border:1px solid #1a1610; padding:1rem; text-align:center;">
+        <div style="font-family:'Cinzel',serif; font-size:1.6rem; color:var(--sage-lt);">6</div>
+        <div style="font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--ash);">Water</div>
+      </div>
+      <div style="flex:1; min-width:120px; background:var(--deep); border:1px solid #1a1610; padding:1rem; text-align:center;">
+        <div style="font-family:'Cinzel',serif; font-size:1.6rem; color:var(--ash);">0</div>
+        <div style="font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--ash);">Fire</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ STELLIA ═══════════════════════════════ -->
+<section id="stellia" style="background: linear-gradient(to bottom, var(--black), #0a0805, var(--black)); max-width:100%; padding: 5rem 2rem;">
+  <div style="max-width:960px; margin:0 auto;">
+    <p class="section-label">Concentrated Power</p>
+    <h2 class="section-title">The Stellia</h2>
+    <div class="divider"></div>
+
+    <div class="stellium" data-label="12th House · Capricorn">
+      <p>The source of hidden magnetism — power that operates beneath the surface, seducing and transforming without effort. A wellspring of otherworldly appeal that the conscious mind barely knows it has.</p>
+      <div class="stellium-planets">
+        <span class="planet-tag">Venus 14°57'</span>
+        <span class="planet-tag">Mars 21°04'</span>
+        <span class="planet-tag">Uranus 15°47'</span>
+        <span class="planet-tag">Neptune 17°33'</span>
+        <span class="planet-tag">Ceres 11°58'</span>
+        <span class="planet-tag">North Node 7°52' ℞</span>
+      </div>
+    </div>
+
+    <div class="stellium" data-label="1st House · Aquarius" style="margin-top:1.5rem;">
+      <p>Unconventional identity projected outward — electric, intellectual, magnetic in ways that cannot be explained. The self that meets the world is anomalous by nature, and that is the whole point.</p>
+      <div class="stellium-planets">
+        <span class="planet-tag">Sun 16°56'</span>
+        <span class="planet-tag">Mercury 12°37'</span>
+        <span class="planet-tag">Saturn 10°08'</span>
+        <span class="planet-tag">Lilith 1°45'</span>
+        <span class="planet-tag">Juno 2°52'</span>
+        <span class="planet-tag">Eros 4°41'</span>
+        <span class="planet-tag">Kali 21°36'</span>
+      </div>
+    </div>
+
+    <div class="stellium" data-label="Pluto conjunct MC · Scorpio" style="margin-top:1.5rem;">
+      <p>Destiny is not gentle. Tower moments are not setbacks — they are the mechanism. Transformation, power, and legacy are the public face. This placement does not allow small ambitions.</p>
+      <div class="stellium-planets">
+        <span class="planet-tag">Pluto 22°51'</span>
+        <span class="planet-tag">MC 20°45'</span>
+        <span class="planet-tag">Scorpio</span>
+        <span class="planet-tag">orb 2°05' applying</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ ASTEROIDS ═══════════════════════════════ -->
+<section id="asteroids">
+  <p class="section-label">The Named Forces</p>
+  <h2 class="section-title">Key Asteroids</h2>
+  <div class="divider"></div>
+
+  <div class="asteroid-grid">
+    <div class="asteroid-card">
+      <div class="asteroid-name">Hekate (100)</div>
+      <div class="asteroid-pos">18°17' · 8th House</div>
+      <div class="asteroid-meaning">Magic, intuition, shadow work. The goddess of crossroads holds court in the house of death and rebirth.</div>
+    </div>
+    <div class="asteroid-card">
+      <div class="asteroid-name">Cleopatra (216)</div>
+      <div class="asteroid-pos">21°35' · 8th House · Stationary</div>
+      <div class="asteroid-meaning">Royalty, seduction, sovereign power. Stationary — immovable, permanent, impossible to ignore. Activated by Libra lunations.</div>
+    </div>
+    <div class="asteroid-card">
+      <div class="asteroid-name">Kali (4227)</div>
+      <div class="asteroid-pos">21°36' · 1st House</div>
+      <div class="asteroid-meaning">Destruction and rebirth as identity. One degree from Cleopatra — the destroyer and the queen occupying the same breath.</div>
+    </div>
+    <div class="asteroid-card">
+      <div class="asteroid-name">Circe (34)</div>
+      <div class="asteroid-pos">9°25' · 10th House</div>
+      <div class="asteroid-meaning">Magic and enchantment as public destiny. The witch is not hidden — she is the career, the legacy, the thing the world sees.</div>
+    </div>
+    <div class="asteroid-card">
+      <div class="asteroid-name">Psyche (16)</div>
+      <div class="asteroid-pos">15°18' ℞ · 8th House</div>
+      <div class="asteroid-meaning">The soul, the unconscious, the capacity for transformation through love and trial. Retrograde — deeply internalized.</div>
+    </div>
+    <div class="asteroid-card">
+      <div class="asteroid-name">Lilith (1181)</div>
+      <div class="asteroid-pos">29°29' stationary · 5th House</div>
+      <div class="asteroid-meaning">Primal desire, the shadow self, refusal to submit. Stationary at the 29th degree — critical, fated, at the absolute edge.</div>
+    </div>
+    <div class="asteroid-card">
+      <div class="asteroid-name">Parvati (2847)</div>
+      <div class="asteroid-pos">15°54' · 12th House</div>
+      <div class="asteroid-meaning">Devotion and sacred partnership in the house of the hidden. Love as spiritual practice, not performance.</div>
+    </div>
+    <div class="asteroid-card">
+      <div class="asteroid-name">Vesta (4)</div>
+      <div class="asteroid-pos">25°11' ℞ · 8th House</div>
+      <div class="asteroid-meaning">The sacred flame — what is tended without audience. Trine Ascendant (0°42' orb): the devotion radiates through presence itself.</div>
+    </div>
+    <div class="asteroid-card">
+      <div class="asteroid-name">Horus (1924)</div>
+      <div class="asteroid-pos">4°29' · 1st House</div>
+      <div class="asteroid-meaning">Protection and leadership as natural expression of self. The eye that watches, the force that guards.</div>
+    </div>
+    <div class="asteroid-card">
+      <div class="asteroid-name">Aphrodite (1388)</div>
+      <div class="asteroid-pos">11°44' · 12th House</div>
+      <div class="asteroid-meaning">Love and beauty operating from the hidden realm. Pleasure and magnetism that arise from within rather than being performed.</div>
+    </div>
+    <div class="asteroid-card">
+      <div class="asteroid-name">Isis (42)</div>
+      <div class="asteroid-pos">28°46' ℞ · 7th House</div>
+      <div class="asteroid-meaning">Nurturing, restoration, the magic of reassembly. The one who gathers what has been scattered and makes it whole.</div>
+    </div>
+    <div class="asteroid-card">
+      <div class="asteroid-name">Atropos (273)</div>
+      <div class="asteroid-pos">10°54' stationary · 8th House</div>
+      <div class="asteroid-meaning">The fate cutter. Stationary in the 8th — the thread of fate is not cut randomly here. It is chosen, intentional, and precise.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ TAROT ═══════════════════════════════ -->
+<section id="tarot" style="background: linear-gradient(to bottom, var(--black), #0a0805, var(--black)); max-width:100%; padding: 5rem 2rem;">
+  <div style="max-width:960px; margin:0 auto;">
+    <p class="section-label">The Cards of the Chart</p>
+    <h2 class="section-title">Tarot Correspondences</h2>
+    <div class="divider"></div>
+
+    <div class="tarot-grid">
+      <div class="tarot-card">
+        <div class="tarot-planet">Sun</div>
+        <div class="tarot-glyph">☉</div>
+        <div class="tarot-card-name">The Sun</div>
+      </div>
+      <div class="tarot-card">
+        <div class="tarot-planet">Moon</div>
+        <div class="tarot-glyph">☽</div>
+        <div class="tarot-card-name">The High Priestess</div>
+      </div>
+      <div class="tarot-card">
+        <div class="tarot-planet">Mercury</div>
+        <div class="tarot-glyph">☿</div>
+        <div class="tarot-card-name">The Magician</div>
+      </div>
+      <div class="tarot-card">
+        <div class="tarot-planet">Venus</div>
+        <div class="tarot-glyph">♀</div>
+        <div class="tarot-card-name">The Empress</div>
+      </div>
+      <div class="tarot-card">
+        <div class="tarot-planet">Mars</div>
+        <div class="tarot-glyph">♂</div>
+        <div class="tarot-card-name">The Tower</div>
+      </div>
+      <div class="tarot-card">
+        <div class="tarot-planet">Jupiter ℞</div>
+        <div class="tarot-glyph">♃</div>
+        <div class="tarot-card-name">Wheel of Fortune ℞</div>
+      </div>
+      <div class="tarot-card">
+        <div class="tarot-planet">Saturn</div>
+        <div class="tarot-glyph">♄</div>
+        <div class="tarot-card-name">The World</div>
+      </div>
+      <div class="tarot-card">
+        <div class="tarot-planet">Uranus</div>
+        <div class="tarot-glyph">♅</div>
+        <div class="tarot-card-name">The Fool</div>
+      </div>
+      <div class="tarot-card">
+        <div class="tarot-planet">Neptune</div>
+        <div class="tarot-glyph">♆</div>
+        <div class="tarot-card-name">The Hanged Man</div>
+      </div>
+      <div class="tarot-card">
+        <div class="tarot-planet">Pluto</div>
+        <div class="tarot-glyph">♇</div>
+        <div class="tarot-card-name">Judgement</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 2.5rem;">
+      <p class="section-label" style="margin-bottom:1rem;">Key Aspect Pairs</p>
+      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:1rem;">
+        <div style="border:1px solid #1e1a14; padding:1rem 1.2rem; background:var(--deep); font-size:0.88rem;">
+          <span style="color:var(--gold-dim); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.1em;">Sun conjunct Mercury</span><br/>
+          <span style="color:var(--mist); font-style:italic;">The Sun · The Magician</span>
+        </div>
+        <div style="border:1px solid #1e1a14; padding:1rem 1.2rem; background:var(--deep); font-size:0.88rem;">
+          <span style="color:var(--gold-dim); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.1em;">Moon trine Pluto</span><br/>
+          <span style="color:var(--mist); font-style:italic;">The High Priestess · Judgement</span>
+        </div>
+        <div style="border:1px solid #1e1a14; padding:1rem 1.2rem; background:var(--deep); font-size:0.88rem;">
+          <span style="color:var(--gold-dim); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.1em;">Venus conjunct Neptune</span><br/>
+          <span style="color:var(--mist); font-style:italic;">The Empress · The Hanged Man</span>
+        </div>
+        <div style="border:1px solid #1e1a14; padding:1rem 1.2rem; background:var(--deep); font-size:0.88rem;">
+          <span style="color:var(--gold-dim); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.1em;">Mars conjunct Uranus</span><br/>
+          <span style="color:var(--mist); font-style:italic;">The Tower · The Fool</span>
+        </div>
+        <div style="border:1px solid #1e1a14; padding:1rem 1.2rem; background:var(--deep); font-size:0.88rem;">
+          <span style="color:var(--gold-dim); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.1em;">Sun square Pluto</span><br/>
+          <span style="color:var(--mist); font-style:italic;">The Sun ℞ · Judgement ℞</span>
+        </div>
+        <div style="border:1px solid #1e1a14; padding:1rem 1.2rem; background:var(--deep); font-size:0.88rem;">
+          <span style="color:var(--gold-dim); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.1em;">Mercury conjunct Saturn</span><br/>
+          <span style="color:var(--mist); font-style:italic;">The Magician · The World</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ NUMEROLOGY ═══════════════════════════════ -->
+<section id="numerology">
+  <p class="section-label">The Numbers</p>
+  <h2 class="section-title">Numerology</h2>
+  <div class="divider"></div>
+
+  <div class="num-row">
+    <div class="num-cell">
+      <div class="num-number">11</div>
+      <div class="num-label">Life Path</div>
+      <div class="num-meaning">The Illuminator · Master Number · visionary, sensitive, between worlds</div>
+    </div>
+    <div class="num-cell">
+      <div class="num-number">6</div>
+      <div class="num-label">Birthday</div>
+      <div class="num-meaning">Harmony · devotion, beauty, the sacred geometry of connection</div>
+    </div>
+    <div class="num-cell">
+      <div class="num-number">9</div>
+      <div class="num-label">Personal Year</div>
+      <div class="num-meaning">Completion · active through Feb 6, 2027 · clearing, preparing, ending what must end</div>
+    </div>
+  </div>
+
+  <div class="stellium" data-label="Personal Year 9 · Now">
+    <p>This is a year of deliberately chosen endings. What is released now does not return. The clearing is not loss — it is the container being emptied before the new cycle demands to be filled. Friendships, patterns, roles, and places may all shift. This is on schedule.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ RITUAL ANCHORS ═══════════════════════════════ -->
+<section id="anchors">
+  <p class="section-label">Sacred Timing</p>
+  <h2 class="section-title">Ritual Anchors</h2>
+  <div class="divider"></div>
+
+  <ul class="anchor-list">
+    <li>
+      <strong>Saturdays · Saturn Hour</strong>
+      Saturn rules the chart (Capricorn rising, Saturn in 1st). Saturday Root Rituals are structurally aligned.
+    </li>
+    <li>
+      <strong>Pre-Dawn · Liminal Hours</strong>
+      12th house stellium makes pre-dawn the most potent window for solitary practice — the veil is thinnest before the world wakes.
+    </li>
+    <li>
+      <strong>Scorpio Season</strong>
+      Pluto conjunct MC · Scorpio MC — destiny and career activations arrive in Scorpio season. Power workings are most potent here.
+    </li>
+    <li>
+      <strong>Capricorn Season</strong>
+      Saturn rules the chart. North Node in Capricorn. The 12th house stellium is in Capricorn. This is the season of greatest spiritual discipline and structural magic.
+    </li>
+    <li>
+      <strong>Pisces Moon Transits</strong>
+      Moon in Pisces natally — receptivity peaks when the transiting Moon enters Pisces. Ideal for intuitive, psychic, and water workings.
+    </li>
+    <li>
+      <strong>Dark Moon · New Moon</strong>
+      Born on a New Moon — initiator energy is native. Dark moon work (release, Hekate) and New Moon work (initiation) are both potent.
+    </li>
+    <li>
+      <strong>Libra Full Moons</strong>
+      Cleopatra at 21°35' in 8th house is activated by Libra lunations — beauty, power, seduction workings are amplified.
+    </li>
+    <li>
+      <strong>Pluto Transits</strong>
+      Any transit activating natal Pluto (22°51' Scorpio / 10th) triggers destiny-level shifts. Watch these closely.
+    </li>
+  </ul>
+</section>
+
+<!-- ═══════════════════════════════ FOOTER ═══════════════════════════════ -->
+<footer>
+  <span class="mark">☽ ✦ ♄</span>
+  in the liminale · grimoire of being<br/>
+  existing at the threshold · always
+</footer>
+
+</body>
+</html>
