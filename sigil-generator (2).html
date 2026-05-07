@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sigil Generator — In The Liminale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --void:     #080610;
+      --deep:     #120e22;
+      --plum:     #1e1630;
+      --violet:   #2e2048;
+      --vlt:      #4a3468;
+      --lav:      #9878c0;
+      --mist:     #d0c4e8;
+      --ivory:    #ede8dc;
+      --amber:    #c88a28;
+      --gold:     #e0a830;
+      --gold-lt:  #f8cc60;
+      --burg:     #6a1e2e;
+      --rose:     #c04060;
+      --shadow:   rgba(8,6,16,0.7);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--void);color:var(--mist);font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;line-height:1.7;min-height:100vh}
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;opacity:.04;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
+
+    header{text-align:center;padding:4rem 2rem 2.5rem;position:relative;z-index:1}
+    header::after{content:'';display:block;width:200px;height:1px;background:linear-gradient(to right,transparent,var(--amber),transparent);margin:1.5rem auto 0}
+    .eyebrow{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.55em;text-transform:uppercase;color:var(--amber);margin-bottom:.8rem;opacity:.8}
+    h1{font-family:'Cinzel',serif;font-size:clamp(2.2rem,5vw,3.2rem);font-weight:400;color:var(--ivory);letter-spacing:.07em}
+    h1 em{display:block;font-family:'IM Fell English',serif;font-style:italic;font-size:.38em;color:var(--lav);margin-top:.4rem;letter-spacing:.06em}
+
+    main{max-width:820px;margin:0 auto;padding:2rem 2rem 6rem;position:relative;z-index:1}
+
+    .step-label{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.48em;text-transform:uppercase;color:var(--amber);opacity:.8;margin-bottom:.4rem}
+    .rule{width:100%;height:1px;background:linear-gradient(to right,var(--vlt),transparent);margin:.4rem 0 1.8rem}
+
+    /* INPUT */
+    .input-card{background:var(--deep);border:1px solid #2e204855;border-radius:12px;padding:2rem;margin-bottom:2rem;position:relative;overflow:hidden}
+    .input-card::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;background:radial-gradient(circle,#c88a2810 0%,transparent 70%);pointer-events:none}
+    .input-hint{font-style:italic;color:var(--lav);margin-bottom:1.2rem;font-size:1rem;opacity:.85;line-height:1.6}
+    textarea.main-input{width:100%;background:var(--plum);border:1px solid #2e204877;border-radius:8px;padding:1rem 1.2rem;font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--ivory);outline:none;transition:border-color .3s,box-shadow .3s;resize:none;min-height:110px}
+    textarea.main-input::placeholder{color:var(--lav);opacity:.4}
+    textarea.main-input:focus{border-color:var(--amber);box-shadow:0 0 0 3px #c88a2812}
+
+    /* WORKING TYPE CARDS */
+    .working-label{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ivory);display:block;margin:1.4rem 0 .8rem;opacity:.8}
+    .working-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.8rem;margin-bottom:1.4rem}
+    .working-card{background:var(--plum);border:1px solid #2e204866;border-radius:8px;padding:.9rem 1rem;cursor:pointer;transition:all .3s;text-align:center;user-select:none}
+    .working-card:hover{border-color:var(--amber);background:#251840}
+    .working-card.selected{border-color:var(--amber);background:linear-gradient(135deg,#251840,#2e2048);box-shadow:0 0 0 1px var(--amber)}
+    .wc-icon{font-size:1.4rem;margin-bottom:.3rem;line-height:1}
+    .wc-name{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ivory);margin-bottom:.2rem}
+    .wc-desc{font-size:.78rem;color:var(--lav);font-style:italic;opacity:.75;line-height:1.4}
+
+    .refine-btn{display:block;width:100%;padding:.95rem;background:linear-gradient(135deg,var(--vlt),var(--burg));border:1px solid #4a346855;border-radius:8px;font-family:'Cinzel',serif;font-size:.74rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-lt);cursor:pointer;transition:opacity .3s,transform .2s}
+    .refine-btn:hover{opacity:.88;transform:translateY(-2px)}
+    .refine-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+    /* LOADING */
+    .loading{display:none;text-align:center;padding:1.2rem;font-style:italic;color:var(--lav);opacity:.7;font-size:1rem}
+    .loading.visible{display:block;animation:pulse 2s ease-in-out infinite}
+    .loading-dots::after{content:'';animation:dots 1.5s steps(4,end) infinite}
+    @keyframes dots{0%,20%{content:''}40%{content:'.'}60%{content:'..'}80%,100%{content:'...'}}
+    @keyframes pulse{0%,100%{opacity:.5}50%{opacity:.9}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+    /* REFINED */
+    #refined-section{display:none;margin-bottom:2rem;animation:fadeUp .5s ease}
+    #refined-section.visible{display:block}
+    .refined-card{background:var(--deep);border:1px solid #2e204855;border-radius:12px;padding:2rem}
+    .refined-phrase{font-family:'IM Fell English',serif;font-style:italic;font-size:1.5rem;color:var(--gold-lt);text-align:center;line-height:1.5;padding:1.2rem;border:1px solid #c88a2833;border-radius:8px;background:#c88a2808;margin-bottom:1.2rem}
+    .meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:1.2rem}
+    .meta-chip{background:var(--plum);border:1px solid #2e204866;border-radius:6px;padding:.65rem .8rem;text-align:center}
+    .meta-chip-lbl{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:.2rem;opacity:.75}
+    .meta-chip-val{font-size:.9rem;color:var(--ivory);font-style:italic}
+    .activation-box{background:var(--plum);border:1px solid #2e204866;border-radius:6px;padding:.9rem 1.1rem;margin-bottom:1.4rem}
+    .activation-box .meta-chip-lbl{text-align:left;margin-bottom:.3rem}
+    .activation-box p{font-size:.95rem;font-style:italic;color:var(--mist);line-height:1.6}
+
+    /* STYLE SELECTOR */
+    .style-label{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ivory);display:block;margin-bottom:.8rem;opacity:.8}
+    .style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.8rem;margin-bottom:1.4rem}
+    .style-card{background:var(--plum);border:1px solid #2e204866;border-radius:8px;padding:.9rem 1rem;cursor:pointer;transition:all .3s;text-align:center;user-select:none}
+    .style-card:hover{border-color:var(--lav)}
+    .style-card.selected{border-color:var(--gold-lt);background:linear-gradient(135deg,#251840,#2e2048);box-shadow:0 0 0 1px var(--gold-lt)}
+    .sc-glyph{font-size:1.6rem;margin-bottom:.3rem;line-height:1}
+    .sc-name{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ivory);margin-bottom:.2rem}
+    .sc-desc{font-size:.78rem;color:var(--lav);font-style:italic;opacity:.75;line-height:1.4}
+
+    .generate-btn{display:block;width:100%;padding:1rem;background:linear-gradient(135deg,var(--amber),#8a5010);border:none;border-radius:8px;font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:.3em;text-transform:uppercase;color:var(--void);cursor:pointer;font-weight:600;transition:opacity .3s,transform .2s;box-shadow:0 4px 20px #c88a2833}
+    .generate-btn:hover{opacity:.9;transform:translateY(-2px)}
+
+    /* CARD SECTION */
+    #card-section{display:none;margin-top:2rem;animation:fadeUp .6s ease}
+    #card-section.visible{display:block}
+    .card-wrap{background:var(--deep);border:1px solid #2e204855;border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+    #sigil-card{width:100%;max-width:560px;margin:0 auto;display:block;border-radius:6px}
+
+    /* STYLE SWITCHER */
+    .switcher-label{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);opacity:.75;text-align:center;margin:.8rem 0 .6rem}
+    .switcher-row{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:1.2rem}
+    .sw-btn{padding:.4rem 1rem;background:var(--plum);border:1px solid #2e204866;border-radius:6px;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--lav);cursor:pointer;transition:all .3s}
+    .sw-btn:hover{border-color:var(--lav)}
+    .sw-btn.active{border-color:var(--gold-lt);color:var(--gold-lt);background:#251840}
+
+    .card-actions{display:flex;gap:1rem;justify-content:center}
+    .btn-dl{padding:.85rem 2rem;background:linear-gradient(135deg,var(--amber),#8a5010);border:none;border-radius:8px;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--void);font-weight:600;cursor:pointer;transition:opacity .3s,transform .2s;box-shadow:0 4px 16px #c88a2833}
+    .btn-dl:hover{opacity:.9;transform:translateY(-1px)}
+    .btn-restart{padding:.85rem 2rem;background:transparent;border:1px solid #2e204888;border-radius:8px;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--lav);cursor:pointer;transition:all .3s}
+    .btn-restart:hover{border-color:var(--rose);color:var(--rose)}
+
+
+    /* FLIP CARD WIDGET */
+    .flip-scene {
+      width: 100%;
+      max-width: 700px;
+      height: 200px;
+      margin: 2rem auto 1.5rem;
+      perspective: 1200px;
+    }
+    .flip-card {
+      width: 100%; height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+      cursor: pointer;
+    }
+    .flip-scene:hover .flip-card,
+    .flip-card.flipped { transform: rotateY(180deg); }
+
+    .flip-front, .flip-back {
+      position: absolute; inset: 0;
+      backface-visibility: hidden;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #2e204866;
+    }
+    .flip-front {
+      background: var(--deep);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--amber);
+      opacity: 0.8;
+      flex-direction: column; gap: 0.6rem;
+    }
+    .flip-front-glyph { font-size: 2rem; opacity: 0.6; }
+    .flip-front-hint { font-size: 0.55rem; color: var(--lav); opacity: 0.6; }
+    .flip-back {
+      transform: rotateY(180deg);
+      background: var(--plum);
+      padding: 1.2rem 1.5rem;
+      display: flex; flex-direction: column; justify-content: center; gap: 0.5rem;
+    }
+    .flip-back-phrase {
+      font-family: 'IM Fell English', serif;
+      font-style: italic; font-size: 1.2rem;
+      color: var(--gold-lt); line-height: 1.4;
+    }
+    .flip-back-meta {
+      font-family: 'Cinzel', serif;
+      font-size: 0.58rem; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--lavender); opacity: 0.7;
+    }
+    .flip-back-activation {
+      font-style: italic; font-size: 0.88rem;
+      color: var(--mist); opacity: 0.8; line-height: 1.5;
+    }
+    .flip-back-date {
+      font-family: 'Cinzel', serif;
+      font-size: 0.55rem; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--lavender); opacity: 0.4;
+      margin-top: auto;
+    }
+    @media(max-width:600px){.working-grid{grid-template-columns:repeat(2,1fr)}.style-grid{grid-template-columns:repeat(2,1fr)}.meta-grid{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">☽ &nbsp;✦&nbsp; ♄</p>
+  <h1>Sigil Generator<em>Practices · In The Liminale</em></h1>
+</header>
+
+<main>
+
+  <!-- STEP 1 -->
+  <p class="step-label">Step One — Your Intention</p>
+  <div class="rule"></div>
+
+  <div class="input-card">
+    <p class="input-hint">Speak your intention freely — as raw or as detailed as you need. Claude will distill it into a potent sigil phrase and select your optimal working conditions.</p>
+    <textarea class="main-input" id="intention-input" placeholder="e.g. I want to protect my home and everyone in it from negative energy and people who mean me harm..."></textarea>
+
+    <span class="working-label">What kind of working is this? <span style="color:var(--lav);font-style:italic;text-transform:none;letter-spacing:0;font-size:.9em;opacity:.7">(optional — Claude will infer if left blank)</span></span>
+    <div class="working-grid" id="working-grid">
+      <div class="working-card" data-val="protection" onclick="selectWorking(this)">
+        <div class="wc-icon">🛡</div>
+        <div class="wc-name">Protection</div>
+        <div class="wc-desc">Warding, shielding, boundary-setting</div>
+      </div>
+      <div class="working-card" data-val="banishing" onclick="selectWorking(this)">
+        <div class="wc-icon">🌬</div>
+        <div class="wc-name">Banishing</div>
+        <div class="wc-desc">Removing, releasing, clearing away</div>
+      </div>
+      <div class="working-card" data-val="attraction" onclick="selectWorking(this)">
+        <div class="wc-icon">🌹</div>
+        <div class="wc-name">Attraction</div>
+        <div class="wc-desc">Drawing in, magnetizing, calling forth</div>
+      </div>
+      <div class="working-card" data-val="manifestation" onclick="selectWorking(this)">
+        <div class="wc-icon">✨</div>
+        <div class="wc-name">Manifestation</div>
+        <div class="wc-desc">Building, creating, making real</div>
+      </div>
+      <div class="working-card" data-val="binding" onclick="selectWorking(this)">
+        <div class="wc-icon">🔗</div>
+        <div class="wc-name">Binding</div>
+        <div class="wc-desc">Holding, containing, restricting harm</div>
+      </div>
+      <div class="working-card" data-val="healing" onclick="selectWorking(this)">
+        <div class="wc-icon">🌿</div>
+        <div class="wc-name">Healing</div>
+        <div class="wc-desc">Restoring, mending, regenerating</div>
+      </div>
+      <div class="working-card" data-val="divination" onclick="selectWorking(this)">
+        <div class="wc-icon">🔮</div>
+        <div class="wc-name">Divination</div>
+        <div class="wc-desc">Seeing, knowing, opening sight</div>
+      </div>
+      <div class="working-card" data-val="transformation" onclick="selectWorking(this)">
+        <div class="wc-icon">🐍</div>
+        <div class="wc-name">Transformation</div>
+        <div class="wc-desc">Changing form, shedding, rebirth</div>
+      </div>
+      <div class="working-card" data-val="devotion" onclick="selectWorking(this)">
+        <div class="wc-icon">🕯</div>
+        <div class="wc-name">Devotion</div>
+        <div class="wc-desc">Offering, honoring, sacred dedication</div>
+      </div>
+    </div>
+
+    <button class="refine-btn" id="refine-btn" onclick="refineIntention()">✦ &nbsp;Distill My Intention&nbsp; ✦</button>
+    <div class="loading" id="refine-loading">Distilling your intention<span class="loading-dots"></span></div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="refined-section">
+    <p class="step-label">Step Two — Your Sigil Phrase</p>
+    <div class="rule"></div>
+
+    <div class="refined-card">
+      <div class="refined-phrase" id="refined-phrase">—</div>
+
+      <div class="meta-grid">
+        <div class="meta-chip"><span class="meta-chip-lbl">Planet</span><span class="meta-chip-val" id="meta-planet">—</span></div>
+        <div class="meta-chip"><span class="meta-chip-lbl">Element</span><span class="meta-chip-val" id="meta-element">—</span></div>
+        <div class="meta-chip"><span class="meta-chip-lbl">Moon Phase</span><span class="meta-chip-val" id="meta-moon">—</span></div>
+      </div>
+
+      <div class="activation-box">
+        <span class="meta-chip-lbl">Activation — within the next two weeks</span>
+        <p id="meta-activation">—</p>
+      </div>
+
+      <span class="style-label">Choose your sigil style</span>
+      <div class="style-grid" id="style-grid">
+        <div class="style-card" data-val="saturn" onclick="selectStyle(this)">
+          <div class="sc-glyph">♄</div>
+          <div class="sc-name">Saturn</div>
+          <div class="sc-desc">Strict geometry, disciplined boundaries, structured power</div>
+        </div>
+        <div class="style-card" data-val="pluto" onclick="selectStyle(this)">
+          <div class="sc-glyph">♇</div>
+          <div class="sc-name">Pluto</div>
+          <div class="sc-desc">Transformation spirals, death-rebirth cycles, dense intensity</div>
+        </div>
+        <div class="style-card" data-val="moon" onclick="selectStyle(this)">
+          <div class="sc-glyph">☽</div>
+          <div class="sc-name">Moon</div>
+          <div class="sc-desc">Fluid curves, tidal arcs, intuitive flowing paths</div>
+        </div>
+        <div class="style-card" data-val="venus" onclick="selectStyle(this)">
+          <div class="sc-glyph">♀</div>
+          <div class="sc-name">Venus</div>
+          <div class="sc-desc">Pentagonal, floral geometry, the golden ratio</div>
+        </div>
+        <div class="style-card" data-val="mars" onclick="selectStyle(this)">
+          <div class="sc-glyph">♂</div>
+          <div class="sc-name">Mars</div>
+          <div class="sc-desc">Aggressive diagonals, triangular force, sharp lines</div>
+        </div>
+        <div class="style-card" data-val="mercury" onclick="selectStyle(this)">
+          <div class="sc-glyph">☿</div>
+          <div class="sc-name">Mercury</div>
+          <div class="sc-desc">Quick angular paths, messenger lines, swift geometry</div>
+        </div>
+        <div class="style-card" data-val="jupiter" onclick="selectStyle(this)">
+          <div class="sc-glyph">♃</div>
+          <div class="sc-name">Jupiter</div>
+          <div class="sc-desc">Expansive wheel geometry, abundant radiating spokes</div>
+        </div>
+        <div class="style-card" data-val="uranus" onclick="selectStyle(this)">
+          <div class="sc-glyph">♅</div>
+          <div class="sc-name">Uranus</div>
+          <div class="sc-desc">Electric asymmetry, lightning breaks, pattern disruption</div>
+        </div>
+      </div>
+
+      <button class="generate-btn" onclick="generateSigil()">✦ &nbsp;Generate My Sigil&nbsp; ✦</button>
+      <div class="loading" id="generate-loading" style="margin-top:.8rem">Drawing your sigil<span class="loading-dots"></span></div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div id="card-section">
+    <p class="step-label">Step Three — Your Sigil Card</p>
+    <div class="rule"></div>
+
+    <!-- FLIP CARD PREVIEW -->
+    <div class="flip-scene" id="flip-scene" onclick="this.querySelector('.flip-card').classList.toggle('flipped')">
+      <div class="flip-card" id="flip-card">
+        <div class="flip-front">
+          <div class="flip-front-glyph" id="flip-glyph">♄</div>
+          <div id="flip-phrase-preview">—</div>
+          <div class="flip-front-hint">hover to reveal details</div>
+        </div>
+        <div class="flip-back">
+          <div class="flip-back-phrase" id="flip-back-phrase">—</div>
+          <div class="flip-back-meta" id="flip-back-meta">—</div>
+          <div class="flip-back-activation" id="flip-back-activation">—</div>
+          <div class="flip-back-date" id="flip-back-date">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-wrap">
+      <canvas id="sigil-card" width="1000" height="700"></canvas>
+    </div>
+
+    <p class="switcher-label">Switch sigil style</p>
+    <div class="switcher-row" id="switcher-row">
+      <button class="sw-btn" data-val="saturn" onclick="switchStyle(this)">♄ Saturn</button>
+      <button class="sw-btn" data-val="pluto" onclick="switchStyle(this)">♇ Pluto</button>
+      <button class="sw-btn" data-val="moon" onclick="switchStyle(this)">☽ Moon</button>
+      <button class="sw-btn" data-val="venus" onclick="switchStyle(this)">♀ Venus</button>
+      <button class="sw-btn" data-val="mars" onclick="switchStyle(this)">♂ Mars</button>
+      <button class="sw-btn" data-val="mercury" onclick="switchStyle(this)">☿ Mercury</button>
+      <button class="sw-btn" data-val="jupiter" onclick="switchStyle(this)">♃ Jupiter</button>
+      <button class="sw-btn" data-val="uranus" onclick="switchStyle(this)">♅ Uranus</button>
+    </div>
+
+    <div class="card-actions">
+      <button class="btn-dl" onclick="downloadCard()">⬇ &nbsp;Download Card</button>
+      <button class="btn-restart" onclick="restart()">Start Again</button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ═══════════════════ STATE ═══════════════════
+let sigilData = null;
+let selectedWorking = null;
+let selectedStyle = null;
+let currentStyle = null;
+
+function selectWorking(el) {
+  document.querySelectorAll('.working-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedWorking = el.dataset.val;
+}
+
+function selectStyle(el) {
+  document.querySelectorAll('.style-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedStyle = el.dataset.val;
+}
+
+// ═══════════════════ STEP 1 — REFINE ═══════════════════
+async function refineIntention() {
+  const intention = document.getElementById('intention-input').value.trim();
+  if (!intention) { alert('Please describe your intention first.'); return; }
+
+  const btn = document.getElementById('refine-btn');
+  const loading = document.getElementById('refine-loading');
+  btn.disabled = true; loading.classList.add('visible');
+  document.getElementById('refined-section').classList.remove('visible');
+  document.getElementById('card-section').classList.remove('visible');
+
+  try {
+    // Check if running locally (won't work without HTTPS)
+    if (window.location.protocol === 'file:') {
+      alert('The sigil generator needs to run on GitHub Pages to work fully.\n\nVisit: https://intheliminale.com/sigil-generator.html');
+      btn.disabled = false; loading.classList.remove('visible');
+      return;
+    }
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `You are a skilled witch helping create a sigil for a specific practitioner. Here is their natal chart context:
+- Sun: Aquarius 16°56' 1st House
+- Moon: Pisces 16°29' 2nd House (born on a New Moon)
+- Rising: Capricorn 25°54' (Saturn-ruled)
+- Saturn: Aquarius 1st House (chart ruler)
+- Pluto: Scorpio conjunct MC (destiny = transformation)
+- 12th house stellium: Venus, Mars, Uranus, Neptune in Capricorn (hidden magnetism)
+- North Node: Capricorn 12th House
+- Hekate in 8th House, Cleopatra stationary 8th House
+- Life Path 11 (Master Number), Personal Year 9 (completion/clearing)
+- Element balance: Earth 15, Air 6, Water 6, Fire 0
+
+Working type selected by user: ${selectedWorking || 'NOT SELECTED — infer from intention'}
+Their intention: "${intention}"
+
+Today's date: ${new Date().toLocaleDateString('en-US', {weekday:'long',year:'numeric',month:'long',day:'numeric'})}
+
+Your tasks:
+1. Distill into a SHORT potent sigil phrase (4-8 words, present tense, declarative, ALL CAPS)
+2. Select the best planetary ruler for this working given their chart
+3. Select the best element given their chart and working type
+4. Select the best lunar phase for activation within the next 14 days (today is ${new Date().toLocaleDateString()}, the moon is currently waning gibbous moving toward last quarter)
+5. Write a specific activation method (2 sentences max) using materials they have: Florida water, green tourmaline, green aventurine, copper tea set, candles
+6. Recommend which sigil style from their primary planets would be most potent for this working: Saturn, Pluto, Moon, Venus, Mars, Mercury, Jupiter, or Uranus
+
+Respond ONLY in valid JSON, no markdown:
+{"phrase":"SIGIL PHRASE","planet":"Planet","element":"Element","moon":"Moon Phase","activation":"Activation instructions.","recommended_style":"PlanetName","style_reason":"One sentence why.","working":"protection|banishing|attraction|manifestation|binding|healing|divination|transformation|devotion"}`
+        }]
+      })
+    });
+
+    const data = await resp.json();
+    const parsed = JSON.parse(data.content[0].text.trim());
+
+    // Auto-select working card if not already chosen
+    const inferredWorking = parsed.working || selectedWorking;
+    if (!selectedWorking && inferredWorking) {
+      document.querySelectorAll('.working-card').forEach(c => {
+        c.classList.remove('selected');
+        if (c.dataset.val === inferredWorking) c.classList.add('selected');
+      });
+      selectedWorking = inferredWorking;
+    }
+
+    sigilData = {
+      intention, working: inferredWorking,
+      phrase: parsed.phrase,
+      planet: parsed.planet,
+      element: parsed.element,
+      moon: parsed.moon,
+      activation: parsed.activation,
+      recommendedStyle: parsed.recommended_style,
+      styleReason: parsed.style_reason,
+      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    };
+
+    document.getElementById('refined-phrase').textContent = parsed.phrase;
+    document.getElementById('meta-planet').textContent = parsed.planet;
+    document.getElementById('meta-element').textContent = parsed.element;
+    document.getElementById('meta-moon').textContent = parsed.moon;
+    document.getElementById('meta-activation').textContent = parsed.activation;
+
+    // Auto-highlight recommended style
+    const rec = parsed.recommended_style.toLowerCase();
+    document.querySelectorAll('.style-card').forEach(c => {
+      c.classList.remove('selected');
+      if (c.dataset.val === rec) {
+        c.classList.add('selected');
+        // Add reason tooltip
+        c.querySelector('.sc-desc').textContent = parsed.style_reason;
+        selectedStyle = rec;
+      }
+    });
+
+    document.getElementById('refined-section').classList.add('visible');
+    document.getElementById('refined-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch(err) {
+    console.error(err);
+    alert('Something went wrong. Please try again.');
+  } finally {
+    btn.disabled = false; loading.classList.remove('visible');
+  }
+}
+
+// ═══════════════════ SIGIL DRAWING ENGINE ═══════════════════
+const PLANET_PALETTES = {
+  saturn:  { primary:'#e8d878', secondary:'#a09040', glow:'#f8f090', accent:'#c8b060' },
+  pluto:   { primary:'#b090d8', secondary:'#705898', glow:'#d0b8ff', accent:'#9070c0' },
+  moon:    { primary:'#d8e4f8', secondary:'#8898c0', glow:'#f0f4ff', accent:'#b8c8e8' },
+  venus:   { primary:'#f0b0c8', secondary:'#b07090', glow:'#ffd0e8', accent:'#d890b0' },
+  mars:    { primary:'#f08050', secondary:'#a03020', glow:'#ff9070', accent:'#d06040' },
+  mercury: { primary:'#90c8e0', secondary:'#407890', glow:'#c0e8ff', accent:'#70a8c0' },
+  jupiter: { primary:'#d0b878', secondary:'#906830', glow:'#f0d898', accent:'#b09058' },
+  uranus:  { primary:'#88d8c0', secondary:'#408870', glow:'#a8f8e0', accent:'#68b8a0' },
+};
+
+function letterReduction(text) {
+  const clean = text.toLowerCase().replace(/[^a-z]/g,'');
+  return [...new Set(clean.split(''))].map(ch => ((ch.charCodeAt(0)-97)/26)*Math.PI*2);
+}
+function strToSeed(s){let h=0;for(let i=0;i<s.length;i++)h=Math.imul(31,h)+s.charCodeAt(i)|0;return Math.abs(h)}
+function seededRnd(seed){let s=seed;return()=>{s=(s*1664525+1013904223)&0xffffffff;return(s>>>0)/0xffffffff}}
+
+function drawSigilGeometry(ctx, phrase, styleName, cx, cy, R) {
+  const pal = PLANET_PALETTES[styleName] || PLANET_PALETTES.saturn;
+  const angles = letterReduction(phrase);
+  const rnd = seededRnd(strToSeed(phrase + styleName));
+
+  ctx.save(); ctx.translate(cx, cy);
+
+  // Atmosphere glow
+  const grd = ctx.createRadialGradient(0,0,0,0,0,R*1.4);
+  grd.addColorStop(0, pal.glow+'18'); grd.addColorStop(1,'transparent');
+  ctx.fillStyle=grd; ctx.beginPath(); ctx.arc(0,0,R*1.5,0,Math.PI*2); ctx.fill();
+
+  // Outer ring
+  ctx.shadowColor=pal.glow; ctx.shadowBlur=18;
+  ctx.strokeStyle=pal.primary; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.arc(0,0,R,0,Math.PI*2); ctx.stroke();
+
+  // Style-specific base geometry
+  switch(styleName) {
+    case 'saturn': drawSaturnGeometry(ctx, pal, R, rnd); break;
+    case 'pluto':  drawPlutoGeometry(ctx, pal, R, rnd); break;
+    case 'moon':   drawMoonGeometry(ctx, pal, R, rnd); break;
+    case 'venus':  drawVenusGeometry(ctx, pal, R, rnd); break;
+    case 'mars':   drawMarsGeometry(ctx, pal, R, rnd); break;
+    case 'mercury':drawMercuryGeometry(ctx, pal, R, rnd); break;
+    case 'jupiter':drawJupiterGeometry(ctx, pal, R, rnd); break;
+    case 'uranus': drawUranusGeometry(ctx, pal, R, rnd); break;
+    default: drawSaturnGeometry(ctx, pal, R, rnd);
+  }
+
+  // Letter reduction sigil path (on top of all geometry)
+  if (angles.length >= 2) {
+    const pts = angles.map(a => {
+      const r = R*(0.2 + Math.sin(a*2.5)*0.22 + 0.18);
+      return [Math.cos(a)*r, Math.sin(a)*r];
+    });
+
+    ctx.shadowColor=pal.glow; ctx.shadowBlur=24;
+    ctx.strokeStyle=pal.primary; ctx.lineWidth=2.8;
+    ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
+    for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
+    ctx.stroke();
+
+    ctx.fillStyle=pal.glow; ctx.shadowBlur=30;
+    ctx.beginPath(); ctx.arc(pts[0][0],pts[0][1],5.5,0,Math.PI*2); ctx.fill();
+
+    ctx.strokeStyle=pal.glow; ctx.lineWidth=2; ctx.shadowBlur=14;
+    const last=pts[pts.length-1];
+    ctx.beginPath(); ctx.arc(last[0],last[1],8,0,Math.PI*2); ctx.stroke();
+  }
+
+  // Center
+  ctx.fillStyle=pal.glow; ctx.shadowColor=pal.glow; ctx.shadowBlur=32;
+  ctx.beginPath(); ctx.arc(0,0,3,0,Math.PI*2); ctx.fill();
+
+  ctx.restore();
+}
+
+// ── SATURN: strict squares and cardinal lines ──
+function drawSaturnGeometry(ctx, pal, R, rnd) {
+  ctx.shadowBlur=6; ctx.strokeStyle=pal.secondary+'88'; ctx.lineWidth=0.9;
+  // Square
+  const sq = R*0.65;
+  ctx.beginPath(); ctx.rect(-sq,-sq,sq*2,sq*2); ctx.stroke();
+  // Inner square rotated
+  ctx.save(); ctx.rotate(Math.PI/4);
+  ctx.beginPath(); ctx.rect(-sq*.72,-sq*.72,sq*1.44,sq*1.44); ctx.stroke();
+  ctx.restore();
+  // Cardinal cross
+  ctx.strokeStyle=pal.accent+'66'; ctx.lineWidth=0.7;
+  ctx.beginPath(); ctx.moveTo(-R*.9,0); ctx.lineTo(R*.9,0); ctx.moveTo(0,-R*.9); ctx.lineTo(0,R*.9); ctx.stroke();
+  // Tick marks
+  ctx.strokeStyle=pal.primary+'88'; ctx.lineWidth=1.2;
+  for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;ctx.beginPath();ctx.moveTo(Math.cos(a)*R,Math.sin(a)*R);ctx.lineTo(Math.cos(a)*R*(i%3===0?.8:.88),Math.sin(a)*R*(i%3===0?.8:.88));ctx.stroke()}
+}
+
+// ── PLUTO: death-rebirth spirals ──
+function drawPlutoGeometry(ctx, pal, R, rnd) {
+  // Outer spiral
+  ctx.shadowBlur=8; ctx.strokeStyle=pal.secondary+'77'; ctx.lineWidth=0.9;
+  ctx.beginPath();
+  for(let t=0;t<Math.PI*6;t+=0.04){const r=(t/(Math.PI*6))*R*.78;ctx.lineTo(Math.cos(t)*r,Math.sin(t)*r)}
+  ctx.stroke();
+  // Counter-spiral
+  ctx.strokeStyle=pal.accent+'55'; ctx.lineWidth=0.7;
+  ctx.beginPath();
+  for(let t=0;t<Math.PI*4;t+=0.05){const r=R*.78-(t/(Math.PI*4))*R*.55;ctx.lineTo(Math.cos(-t)*r,Math.sin(-t)*r)}
+  ctx.stroke();
+  // Triangle of transformation
+  ctx.strokeStyle=pal.secondary+'88'; ctx.lineWidth=1;
+  ctx.beginPath();
+  for(let i=0;i<=3;i++){const a=(i/3)*Math.PI*2-Math.PI/2;i===0?ctx.moveTo(Math.cos(a)*R*.7,Math.sin(a)*R*.7):ctx.lineTo(Math.cos(a)*R*.7,Math.sin(a)*R*.7)}
+  ctx.closePath(); ctx.stroke();
+  ctx.strokeStyle=pal.primary+'88'; ctx.lineWidth=1;
+  for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;ctx.beginPath();ctx.moveTo(Math.cos(a)*R,Math.sin(a)*R);ctx.lineTo(Math.cos(a)*R*.85,Math.sin(a)*R*.85);ctx.stroke()}
+}
+
+// ── MOON: fluid arcs and tidal curves ──
+function drawMoonGeometry(ctx, pal, R, rnd) {
+  ctx.shadowBlur=10; ctx.strokeStyle=pal.secondary+'77'; ctx.lineWidth=0.9;
+  // Crescent arcs
+  for(let i=0;i<5;i++){
+    const r=R*(0.3+i*0.14);
+    ctx.strokeStyle=pal.secondary+(i%2===0?'66':'44'); ctx.lineWidth=0.8;
+    ctx.beginPath(); ctx.arc(0,0,r,Math.PI*.1,Math.PI*.9); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0,0,r,-Math.PI*.1,-Math.PI*.9,true); ctx.stroke();
+  }
+  // Waxing/waning arcs
+  ctx.strokeStyle=pal.accent+'55'; ctx.lineWidth=0.7;
+  ctx.beginPath(); ctx.arc(-R*.2,0,R*.65,Math.PI*.5,Math.PI*1.5); ctx.stroke();
+  ctx.beginPath(); ctx.arc(R*.2,0,R*.65,-Math.PI*.5,Math.PI*.5); ctx.stroke();
+  ctx.strokeStyle=pal.primary+'88'; ctx.lineWidth=1.2;
+  for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;ctx.beginPath();ctx.moveTo(Math.cos(a)*R,Math.sin(a)*R);ctx.lineTo(Math.cos(a)*R*(i%3===0?.8:.88),Math.sin(a)*R*(i%3===0?.8:.88));ctx.stroke()}
+}
+
+// ── VENUS: pentagon and floral ──
+function drawVenusGeometry(ctx, pal, R, rnd) {
+  ctx.shadowBlur=8;
+  // Pentagon
+  ctx.strokeStyle=pal.secondary+'88'; ctx.lineWidth=1;
+  ctx.beginPath();
+  for(let i=0;i<=5;i++){const a=(i/5)*Math.PI*2-Math.PI/2;i===0?ctx.moveTo(Math.cos(a)*R*.7,Math.sin(a)*R*.7):ctx.lineTo(Math.cos(a)*R*.7,Math.sin(a)*R*.7)}
+  ctx.closePath(); ctx.stroke();
+  // Pentagram
+  ctx.strokeStyle=pal.accent+'66'; ctx.lineWidth=0.8;
+  const ppts=[];for(let i=0;i<5;i++){const a=(i/5)*Math.PI*2-Math.PI/2;ppts.push([Math.cos(a)*R*.7,Math.sin(a)*R*.7])}
+  ctx.beginPath(); ctx.moveTo(ppts[0][0],ppts[0][1]);
+  [2,4,1,3,0].forEach(i=>ctx.lineTo(ppts[i][0],ppts[i][1])); ctx.stroke();
+  // Petals
+  ctx.strokeStyle=pal.secondary+'44'; ctx.lineWidth=0.7;
+  for(let i=0;i<8;i++){const a=(i/8)*Math.PI*2;ctx.beginPath();ctx.ellipse(Math.cos(a)*R*.45,Math.sin(a)*R*.45,R*.18,R*.1,a,0,Math.PI*2);ctx.stroke()}
+  ctx.strokeStyle=pal.primary+'88'; ctx.lineWidth=1.2;
+  for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;ctx.beginPath();ctx.moveTo(Math.cos(a)*R,Math.sin(a)*R);ctx.lineTo(Math.cos(a)*R*.86,Math.sin(a)*R*.86);ctx.stroke()}
+}
+
+// ── MARS: aggressive triangles ──
+function drawMarsGeometry(ctx, pal, R, rnd) {
+  ctx.shadowBlur=8;
+  const tri=(rot,scale,alpha)=>{ctx.strokeStyle=pal.secondary+alpha;ctx.lineWidth=1;ctx.save();ctx.rotate(rot);ctx.beginPath();for(let i=0;i<=3;i++){const a=(i/3)*Math.PI*2-Math.PI/2;i===0?ctx.moveTo(Math.cos(a)*R*scale,Math.sin(a)*R*scale):ctx.lineTo(Math.cos(a)*R*scale,Math.sin(a)*R*scale)}ctx.closePath();ctx.stroke();ctx.restore()};
+  tri(0,.72,'88'); tri(Math.PI,.72,'66'); tri(Math.PI/6,.5,'55'); tri(Math.PI/2,.4,'44');
+  // Aggressive diagonals
+  ctx.strokeStyle=pal.accent+'55'; ctx.lineWidth=0.7;
+  for(let i=0;i<6;i++){const a=(i/6)*Math.PI*2;ctx.beginPath();ctx.moveTo(Math.cos(a)*R*.9,Math.sin(a)*R*.9);ctx.lineTo(Math.cos(a+Math.PI*.55)*R*.6,Math.sin(a+Math.PI*.55)*R*.6);ctx.stroke()}
+  ctx.strokeStyle=pal.primary+'88'; ctx.lineWidth=1.2;
+  for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;ctx.beginPath();ctx.moveTo(Math.cos(a)*R,Math.sin(a)*R);ctx.lineTo(Math.cos(a)*R*.84,Math.sin(a)*R*.84);ctx.stroke()}
+}
+
+// ── MERCURY: angular messenger ──
+function drawMercuryGeometry(ctx, pal, R, rnd) {
+  ctx.shadowBlur=6;
+  // Hexagram
+  ctx.strokeStyle=pal.secondary+'77'; ctx.lineWidth=0.9;
+  for(let rot=0;rot<2;rot++){ctx.save();ctx.rotate(rot*Math.PI/3);ctx.beginPath();for(let i=0;i<=3;i++){const a=(i/3)*Math.PI*2-Math.PI/2;i===0?ctx.moveTo(Math.cos(a)*R*.68,Math.sin(a)*R*.68):ctx.lineTo(Math.cos(a)*R*.68,Math.sin(a)*R*.68)}ctx.closePath();ctx.stroke();ctx.restore()}
+  // Quick angle lines
+  ctx.strokeStyle=pal.accent+'55'; ctx.lineWidth=0.7;
+  for(let i=0;i<8;i++){const a1=(i/8)*Math.PI*2;const a2=((i+3)/8)*Math.PI*2;ctx.beginPath();ctx.moveTo(Math.cos(a1)*R*.5,Math.sin(a1)*R*.5);ctx.lineTo(Math.cos(a2)*R*.75,Math.sin(a2)*R*.75);ctx.stroke()}
+  ctx.strokeStyle=pal.primary+'88'; ctx.lineWidth=1.2;
+  for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;ctx.beginPath();ctx.moveTo(Math.cos(a)*R,Math.sin(a)*R);ctx.lineTo(Math.cos(a)*R*.86,Math.sin(a)*R*.86);ctx.stroke()}
+}
+
+// ── JUPITER: expansive wheel ──
+function drawJupiterGeometry(ctx, pal, R, rnd) {
+  ctx.shadowBlur=8;
+  // Spokes
+  ctx.strokeStyle=pal.secondary+'66'; ctx.lineWidth=0.9;
+  for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.cos(a)*R*.82,Math.sin(a)*R*.82);ctx.stroke()}
+  // Concentric rings
+  [.35,.55,.72].forEach(r=>{ctx.strokeStyle=pal.accent+'55';ctx.lineWidth=0.7;ctx.beginPath();ctx.arc(0,0,R*r,0,Math.PI*2);ctx.stroke()});
+  // Outer arc segments
+  ctx.strokeStyle=pal.secondary+'88'; ctx.lineWidth=1.1;
+  for(let i=0;i<4;i++){const a=(i/4)*Math.PI*2;ctx.beginPath();ctx.arc(0,0,R*.88,a,a+Math.PI*.45);ctx.stroke()}
+  ctx.strokeStyle=pal.primary+'88'; ctx.lineWidth=1.2;
+  for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;ctx.beginPath();ctx.moveTo(Math.cos(a)*R,Math.sin(a)*R);ctx.lineTo(Math.cos(a)*R*.85,Math.sin(a)*R*.85);ctx.stroke()}
+}
+
+// ── URANUS: electric asymmetry ──
+function drawUranusGeometry(ctx, pal, R, rnd) {
+  ctx.shadowBlur=10;
+  // Lightning bolts
+  ctx.strokeStyle=pal.secondary+'88'; ctx.lineWidth=1;
+  const bolt=(startA,len)=>{let x=0,y=0;ctx.beginPath();ctx.moveTo(x,y);for(let i=0;i<6;i++){const jag=(rnd()-.5)*R*.4;const dist=len/6;x+=Math.cos(startA+(rnd()-.5)*1.2)*dist+Math.cos(startA+Math.PI/2)*jag;y+=Math.sin(startA+(rnd()-.5)*1.2)*dist+Math.sin(startA+Math.PI/2)*jag;ctx.lineTo(x,y)}ctx.stroke()};
+  for(let i=0;i<5;i++)bolt((i/5)*Math.PI*2,R*.75);
+  // Broken arcs
+  ctx.strokeStyle=pal.accent+'66'; ctx.lineWidth=0.8;
+  for(let i=0;i<6;i++){const a=(i/6)*Math.PI*2;const span=rnd()*.8+.3;ctx.beginPath();ctx.arc(0,0,R*(0.4+rnd()*.35),a,a+span);ctx.stroke()}
+  ctx.strokeStyle=pal.primary+'88'; ctx.lineWidth=1.2;
+  for(let i=0;i<12;i++){const a=(i/12)*Math.PI*2;ctx.beginPath();ctx.moveTo(Math.cos(a)*R,Math.sin(a)*R);ctx.lineTo(Math.cos(a)*R*.84,Math.sin(a)*R*.84);ctx.stroke()}
+}
+
+// ═══════════════════ CARD RENDERER ═══════════════════
+function drawFullCard(canvas, data, styleName) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const pal = PLANET_PALETTES[styleName] || PLANET_PALETTES.saturn;
+  const glyphs = {saturn:'♄',pluto:'♇',moon:'☽',venus:'♀',mars:'♂',mercury:'☿',jupiter:'♃',uranus:'♅'};
+  const split = 420; // left panel width
+
+  // BACKGROUND
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#0a0618'); bg.addColorStop(0.5, '#120e22'); bg.addColorStop(1, '#0e0a1a');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.015)'; ctx.lineWidth = 0.5;
+  for(let x=0;x<=W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<=H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  // Outer border
+  ctx.strokeStyle = pal.primary + '44'; ctx.lineWidth = 1;
+  ctx.strokeRect(16, 16, W-32, H-32);
+  ctx.strokeStyle = pal.secondary + '22'; ctx.lineWidth = 0.5;
+  ctx.strokeRect(24, 24, W-48, H-48);
+
+  // Corner ornaments
+  [[32,32],[W-32,32],[32,H-32],[W-32,H-32]].forEach(([x,y]) => {
+    ctx.strokeStyle = pal.primary + '88'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x,y,9,0,Math.PI*2); ctx.stroke();
+  });
+
+  // Vertical divider
+  const divGrd = ctx.createLinearGradient(0,0,0,H);
+  divGrd.addColorStop(0,'transparent'); divGrd.addColorStop(0.3,pal.primary+'44');
+  divGrd.addColorStop(0.7,pal.primary+'44'); divGrd.addColorStop(1,'transparent');
+  ctx.strokeStyle = divGrd; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(split,36); ctx.lineTo(split,H-36); ctx.stroke();
+
+  // LEFT PANEL — header
+  ctx.textAlign = 'center';
+  ctx.font = '500 12px Georgia,serif';
+  ctx.fillStyle = pal.accent + 'aa';
+  ctx.fillText('IN THE LIMINALE', split/2, 50);
+  const lRGrd = ctx.createLinearGradient(36,0,split-36,0);
+  lRGrd.addColorStop(0,'transparent'); lRGrd.addColorStop(0.5,pal.primary+'55'); lRGrd.addColorStop(1,'transparent');
+  ctx.strokeStyle = lRGrd; ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.moveTo(36,60); ctx.lineTo(split-36,60); ctx.stroke();
+
+  // LEFT PANEL — SIGIL
+  drawSigilGeometry(ctx, data.phrase, styleName, split/2, H/2 + 10, 188);
+
+  // LEFT PANEL — bottom glyph
+  ctx.font = '18px serif'; ctx.fillStyle = pal.primary + '44';
+  ctx.fillText('☽ ✦ ♄', split/2, H-36);
+
+  // RIGHT PANEL
+  const rx = split + 38;
+  const rw = W - split - 76;
+
+  // Planet glyph top right
+  ctx.textAlign = 'right';
+  ctx.font = 'bold 28px Georgia,serif';
+  ctx.fillStyle = pal.primary + 'aa';
+  ctx.fillText(glyphs[styleName]||'✦', W-36, 54);
+  ctx.font = '10px Georgia,serif'; ctx.fillStyle = pal.primary+'66';
+  ctx.fillText(styleName.toUpperCase() + ' STYLE', W-36, 70);
+
+  // Right rule
+  const rRGrd = ctx.createLinearGradient(rx,0,W-36,0);
+  rRGrd.addColorStop(0,pal.primary+'77'); rRGrd.addColorStop(1,'transparent');
+  ctx.strokeStyle = rRGrd; ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.moveTo(rx,80); ctx.lineTo(W-36,80); ctx.stroke();
+
+  // PHRASE — left aligned, wraps
+  ctx.textAlign = 'left';
+  ctx.font = 'italic 26px Georgia,serif';
+  ctx.fillStyle = pal.glow;
+  ctx.shadowColor = pal.glow + '55'; ctx.shadowBlur = 10;
+  const pw = data.phrase.split(' ');
+  let pl = '', pls = [];
+  pw.forEach(w => {
+    const t = pl ? pl+' '+w : w;
+    if(ctx.measureText(t).width > rw && pl){ pls.push(pl); pl=w; } else pl=t;
+  });
+  if(pl) pls.push(pl);
+  pls.slice(0,3).forEach((l,i) => ctx.fillText(l, rx, 116 + i*34));
+  ctx.shadowBlur = 0;
+
+  const afterPhrase = 116 + pls.length*34 + 12;
+
+  // Dots divider
+  ctx.font = '13px serif'; ctx.fillStyle = pal.primary+'66';
+  ctx.fillText('· · ·', rx, afterPhrase);
+
+  // Meta
+  ctx.font = '11px Georgia,serif';
+  const metaY = afterPhrase + 24;
+  let mx = rx;
+  [data.planet, data.element, data.moon].forEach((item, i, arr) => {
+    ctx.fillStyle = pal.secondary+'ee';
+    ctx.fillText(item.toUpperCase(), mx, metaY);
+    mx += ctx.measureText(item.toUpperCase()).width;
+    if(i < arr.length-1){ ctx.fillStyle=pal.primary+'55'; ctx.fillText('  ·  ',mx,metaY); mx+=ctx.measureText('  ·  ').width; }
+  });
+
+  // Rule
+  ctx.strokeStyle = rRGrd; ctx.lineWidth = 0.6;
+  ctx.beginPath(); ctx.moveTo(rx,metaY+16); ctx.lineTo(W-36,metaY+16); ctx.stroke();
+
+  // ACTIVATION label
+  ctx.font = '9px Georgia,serif'; ctx.fillStyle = pal.amber+'99';
+  ctx.fillText('ACTIVATION', rx, metaY+34);
+
+  // Activation text
+  ctx.font = 'italic 14px Georgia,serif'; ctx.fillStyle = '#d0c4e8bb';
+  const aw = data.activation.split(' ');
+  let al = '', als = [];
+  aw.forEach(w => {
+    const t = al ? al+' '+w : w;
+    if(ctx.measureText(t).width > rw){ als.push(al); al=w; } else al=t;
+  });
+  if(al) als.push(al);
+  als.forEach((l,i) => ctx.fillText(l, rx, metaY+52+i*21));
+
+  const afterAct = metaY+52+als.length*21+18;
+
+  // Working type badge
+  ctx.font = '9px Georgia,serif'; ctx.fillStyle = pal.primary+'66';
+  ctx.fillText((data.working||'').toUpperCase(), rx, afterAct);
+
+  // Bottom rule
+  const botY = H-66;
+  ctx.strokeStyle = rRGrd; ctx.lineWidth=0.5;
+  ctx.beginPath(); ctx.moveTo(rx,botY); ctx.lineTo(W-36,botY); ctx.stroke();
+
+  // Date
+  ctx.font = '11px Georgia,serif'; ctx.fillStyle = '#9878c077';
+  ctx.fillText(data.date.toUpperCase(), rx, botY+22);
+
+  // Intention preview
+  const ip = data.intention && data.intention.length>65 ? data.intention.slice(0,62)+'...' : (data.intention||'');
+  ctx.font = 'italic 12px Georgia,serif'; ctx.fillStyle = pal.lav+'55';
+  ctx.fillText('"' + ip + '"', rx, botY+42);
+}
+
+
+// ═══════════════════ GENERATE ═══════════════════
+function generateSigil() {
+  if(!sigilData){return}
+  if(!selectedStyle){alert('Please choose a sigil style.');return}
+
+  const loading=document.getElementById('generate-loading');
+  loading.classList.add('visible');
+  currentStyle=selectedStyle;
+
+  setTimeout(()=>{
+    const canvas=document.getElementById('sigil-card');
+    drawFullCard(canvas, sigilData, currentStyle);
+    // Highlight switcher
+    document.querySelectorAll('.sw-btn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.val===currentStyle);
+    });
+    // Populate flip card
+    const glyphs={saturn:'♄',pluto:'♇',moon:'☽',venus:'♀',mars:'♂',mercury:'☿',jupiter:'♃',uranus:'♅'};
+    document.getElementById('flip-glyph').textContent = glyphs[currentStyle]||'✦';
+    document.getElementById('flip-phrase-preview').textContent = sigilData.phrase;
+    document.getElementById('flip-back-phrase').textContent = sigilData.phrase;
+    document.getElementById('flip-back-meta').textContent = sigilData.planet.toUpperCase() + '  ·  ' + sigilData.element.toUpperCase() + '  ·  ' + sigilData.moon.toUpperCase();
+    document.getElementById('flip-back-activation').textContent = sigilData.activation;
+    document.getElementById('flip-back-date').textContent = sigilData.date.toUpperCase();
+    // Reset flip state
+    document.getElementById('flip-card').classList.remove('flipped');
+    loading.classList.remove('visible');
+    document.getElementById('card-section').classList.add('visible');
+    document.getElementById('card-section').scrollIntoView({behavior:'smooth',block:'start'});
+  },800);
+}
+
+function switchStyle(btn) {
+  if (!sigilData) return;
+  currentStyle = btn.dataset.val;
+  document.querySelectorAll('.sw-btn').forEach(b => b.classList.toggle('active', b === btn));
+  const canvas = document.getElementById('sigil-card');
+  canvas.style.transition = 'opacity 0.3s';
+  canvas.style.opacity = '0';
+  const glyphs={saturn:'♄',pluto:'♇',moon:'☽',venus:'♀',mars:'♂',mercury:'☿',jupiter:'♃',uranus:'♅'};
+  document.getElementById('flip-glyph').textContent = glyphs[currentStyle]||'✦';
+  setTimeout(() => {
+    drawFullCard(canvas, sigilData, currentStyle);
+    canvas.style.opacity = '1';
+  }, 300);
+}
+
+function downloadCard() {
+  const canvas = document.getElementById('sigil-card');
+  if (!canvas || !sigilData) return;
+  try {
+    const safe = (sigilData.phrase || 'sigil').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const filename = 'sigil-' + safe + '-' + (currentStyle || 'card') + '.png';
+    canvas.toBlob(function(blob) {
+      if (!blob) { alert('Download failed — try right-clicking the sigil image and saving directly.'); return; }
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url; link.download = filename;
+      document.body.appendChild(link); link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, 'image/png');
+  } catch(e) {
+    alert('Download failed — try right-clicking the sigil image and saving directly.');
+  }
+}
+
+function restart(){
+  document.getElementById('intention-input').value='';
+  document.querySelectorAll('.working-card').forEach(c=>c.classList.remove('selected'));
+  document.querySelectorAll('.style-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('refined-section').classList.remove('visible');
+  document.getElementById('card-section').classList.remove('visible');
+  sigilData=null; selectedWorking=null; selectedStyle=null; currentStyle=null;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
