@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crystal Compendium — In The Liminale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --void:#080610;--deep:#120e22;--plum:#1e1630;--violet:#2e2048;
+      --vlt:#4a3468;--lav:#9878c0;--mist:#d0c4e8;--ivory:#ede8dc;
+      --amber:#c88a28;--gold:#e0a830;--gold-lt:#f8cc60;
+      --sage:#4a7838;--sage-lt:#78aa60;--rose:#c04060;
+      --sun-safe:#c8901888;--moon-only:#607898aa;--no-water:#8a2020aa;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--void);color:var(--mist);font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;line-height:1.7;min-height:100vh}
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
+
+    header{text-align:center;padding:4rem 2rem 2.5rem;position:relative;z-index:1}
+    header::after{content:'';display:block;width:220px;height:1px;background:linear-gradient(to right,transparent,var(--amber),transparent);margin:1.5rem auto 0}
+    .eyebrow{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.55em;text-transform:uppercase;color:var(--amber);margin-bottom:.8rem;opacity:.8}
+    h1{font-family:'Cinzel',serif;font-size:clamp(2rem,5vw,3rem);font-weight:400;color:var(--ivory);letter-spacing:.07em}
+    h1 em{display:block;font-family:'IM Fell English',serif;font-style:italic;font-size:.38em;color:var(--lav);margin-top:.4rem;letter-spacing:.06em;opacity:.85}
+    .header-count{font-style:italic;color:var(--lav);opacity:.6;font-size:.9rem;margin-top:.8rem}
+
+    /* CONTROLS */
+    .controls{position:sticky;top:0;z-index:100;background:rgba(8,6,16,.95);backdrop-filter:blur(20px);border-bottom:1px solid #2e204844;padding:.9rem 2rem;display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;justify-content:center}
+    .search-input{background:var(--plum);border:1px solid #2e204877;border-radius:6px;padding:.55rem 1rem;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--ivory);outline:none;width:240px;transition:border-color .3s}
+    .search-input::placeholder{color:var(--lav);opacity:.4}
+    .search-input:focus{border-color:var(--amber)}
+    .filter-btn{background:var(--plum);border:1px solid #2e204866;border-radius:6px;padding:.45rem .9rem;font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--lav);cursor:pointer;transition:all .25s;white-space:nowrap}
+    .filter-btn:hover{border-color:var(--lav);color:var(--ivory)}
+    .filter-btn.active{border-color:var(--amber);color:var(--gold-lt);background:linear-gradient(135deg,#251840,#2e2048)}
+    .results-count{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--lav);opacity:.5;min-width:60px;text-align:center}
+
+    /* GRID */
+    main{max-width:1200px;margin:0 auto;padding:2.5rem 2rem 6rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem}
+
+    /* CRYSTAL CARD */
+    .crystal-card{background:var(--deep);border:1px solid #2e204844;border-radius:12px;overflow:hidden;transition:transform .3s,box-shadow .3s,border-color .3s;position:relative}
+    .crystal-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(8,6,16,.7);border-color:#4a346855}
+    .crystal-card.hidden{display:none}
+
+    /* CARD HEADER */
+    .card-header{padding:1.4rem 1.5rem 1rem;border-bottom:1px solid #2e204833;position:relative}
+    .card-planet-glyph{position:absolute;top:1.2rem;right:1.4rem;font-size:1.4rem;opacity:.4;color:var(--amber)}
+    .card-name{font-family:'Cinzel',serif;font-size:1.1rem;font-weight:400;color:var(--ivory);letter-spacing:.05em;margin-bottom:.3rem}
+    .card-aka{font-style:italic;font-size:.82rem;color:var(--lav);opacity:.6;margin-bottom:.6rem}
+    .card-tags{display:flex;flex-wrap:wrap;gap:.35rem}
+    .tag{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .6rem;border-radius:3px;border:1px solid transparent}
+    .tag-planet{color:var(--gold);border-color:#c88a2844;background:#c88a2808}
+    .tag-element{color:var(--sage-lt);border-color:#4a783844;background:#4a783808}
+    .tag-number{color:var(--lav);border-color:#9878c044;background:#9878c008}
+
+    /* SAFETY BADGES */
+    .safety-row{display:flex;gap:.4rem;margin-top:.6rem;flex-wrap:wrap}
+    .badge{font-family:'Cinzel',serif;font-size:.48rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .65rem;border-radius:3px;font-weight:600}
+    .badge-sun-yes{background:#c8901820;border:1px solid #c8901866;color:#e0b840}
+    .badge-sun-brief{background:#c8681820;border:1px solid #c8681855;color:#d09030}
+    .badge-sun-no{background:#8a202020;border:1px solid #8a202066;color:#c05040}
+    .badge-moon{background:#60789820;border:1px solid #60789866;color:#90b8d8}
+    .badge-water-yes{background:#20607020;border:1px solid #20607066;color:#60a8c0}
+    .badge-water-no{background:#8a202020;border:1px solid #8a202066;color:#c05040}
+    .badge-warn{background:#8a301020;border:1px solid #8a301066;color:#d08050;font-size:.46rem}
+
+    /* CARD BODY */
+    .card-body{padding:1.2rem 1.5rem}
+    .section-head{font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.25em;text-transform:uppercase;color:var(--amber);opacity:.7;margin-bottom:.3rem;margin-top:.9rem}
+    .section-head:first-child{margin-top:0}
+    .card-text{font-size:.92rem;color:var(--mist);line-height:1.65}
+    .chart-resonance{font-style:italic;color:var(--lav);font-size:.9rem;line-height:1.65;border-left:2px solid var(--vlt);padding-left:.8rem;margin-top:.3rem}
+    .ritual-use{font-size:.88rem;color:var(--mist);opacity:.8;line-height:1.6}
+    .charging-note{font-size:.88rem;line-height:1.6}
+    .charging-note.warn{color:#d08050}
+    .charging-note.ok{color:var(--mist);opacity:.85}
+
+    /* PRIORITY BADGE */
+    .priority-star{position:absolute;top:1.2rem;left:1.5rem;font-size:.7rem;color:var(--gold-lt);opacity:.9}
+
+    /* QUICK REF */
+    .quick-ref{max-width:1200px;margin:0 auto 4rem;padding:0 2rem}
+    .qr-card{background:var(--deep);border:1px solid #2e204844;border-radius:12px;padding:2rem}
+    .qr-title{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.4em;text-transform:uppercase;color:var(--amber);margin-bottom:1.5rem;opacity:.8;text-align:center}
+    .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem}
+    .qr-section{background:var(--plum);border-radius:8px;padding:1.1rem 1.2rem}
+    .qr-section-title{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.6rem}
+    .qr-list{font-size:.85rem;color:var(--mist);line-height:1.9;opacity:.85}
+
+    footer{text-align:center;padding:3rem 2rem;border-top:1px solid #2e204833;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--lav);opacity:.45}
+
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .crystal-card{animation:fadeIn .4s ease both}
+
+    @media(max-width:700px){main{grid-template-columns:1fr}.controls{gap:.5rem}.search-input{width:100%}}
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">☽ &nbsp;✦&nbsp; ♄</p>
+  <h1>Crystal Compendium<em>Library · In The Liminale</em></h1>
+  <p class="header-count">34 stones · personalized to your natal chart</p>
+</header>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <input class="search-input" type="text" id="search" placeholder="Search stones..." oninput="filterCards()"/>
+  <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
+  <button class="filter-btn" data-filter="moon-only" onclick="setFilter('moon-only',this)">☽ Moon only</button>
+  <button class="filter-btn" data-filter="sun-safe" onclick="setFilter('sun-safe',this)">☀ Sun safe</button>
+  <button class="filter-btn" data-filter="no-water" onclick="setFilter('no-water',this)">⚠ Not water safe</button>
+  <button class="filter-btn" data-filter="priority" onclick="setFilter('priority',this)">★ Priority</button>
+  <span class="results-count" id="results-count">34</span>
+</div>
+
+<main id="grid">
+
+<!-- ─── AGATE ─── -->
+<div class="crystal-card" data-tags="all sun-safe">
+  <div class="card-header">
+    <div class="card-planet-glyph">☿</div>
+    <div class="card-name">Agate</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Mercury</span>
+      <span class="tag tag-element">Earth</span>
+      <span class="tag tag-number">7</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-yes">☀ Sun safe</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+      <span class="badge badge-moon">☽ Moon ok</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Stabilizing and grounding. Brings mental clarity, emotional balance, and gentle strength. Excellent for anchoring scattered energy without dulling it.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Moonlight or earth preferred. Sunlight is fine for brief periods. Highly forgiving stone.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Mercury in your 1st house — agate supports the part of you that thinks faster than it speaks. Useful during AuDHD hyperfocus spirals.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Perimeter stone for ritual circles. Hold during grounding practices. Place at your workspace.</p>
+  </div>
+</div>
+
+<!-- ─── AMETHYST ─── -->
+<div class="crystal-card" data-tags="all moon-only priority">
+  <div class="card-header">
+    <div class="priority-star">★ priority</div>
+    <div class="card-planet-glyph">♃</div>
+    <div class="card-name">Amethyst <span style="font-size:.75em;opacity:.5">×3</span></div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Jupiter · Neptune</span>
+      <span class="tag tag-element">Water</span>
+      <span class="tag tag-number">3</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-no">☀ NO sun — fades</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+      <span class="badge badge-moon">☽ Moonlight only</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Psychic protection, intuition enhancement, spiritual clarity. One of the most direct supports for liminal and 12th house energy — it works in the hidden, the between, the not-yet-named.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">⚠ Moonlight only. Sunlight fades amethyst — even brief repeated exposure causes permanent color loss.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Pisces Moon, Neptune in 12th — amethyst speaks your chart's native language. It is the most naturally resonant stone in your collection.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Hold during divination. Place on altar during lunar workings. Sleep with for dream work and psychic development.</p>
+  </div>
+</div>
+
+<!-- ─── AQUAMARINE ─── -->
+<div class="crystal-card" data-tags="all moon-only">
+  <div class="card-header">
+    <div class="card-planet-glyph">☽</div>
+    <div class="card-name">Aquamarine</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Moon · Neptune</span>
+      <span class="tag tag-element">Water</span>
+      <span class="tag tag-number">1</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-brief">☀ Brief sun only — fades</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+      <span class="badge badge-moon">☽ Moonlight preferred</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Courage, clear communication, emotional fluency. Calms anxiety and supports speaking truth from a grounded place. The stone of fluid strength.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">Moonlight preferred. Repeated sun exposure fades color over time.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Pisces Moon and heavy water energy — aquamarine amplifies emotional intelligence without destabilizing it. Useful during PMDD cycles for grounded feeling.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Carry during difficult conversations. Use in water-based rituals. Place near your ritual space during emotional workings.</p>
+  </div>
+</div>
+
+<!-- ─── BLACK TOURMALINE ─── -->
+<div class="crystal-card" data-tags="all sun-safe priority">
+  <div class="card-header">
+    <div class="priority-star">★ priority</div>
+    <div class="card-planet-glyph">♄</div>
+    <div class="card-name">Black Tourmaline</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Saturn</span>
+      <span class="tag tag-element">Earth</span>
+      <span class="tag tag-number">3–4</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-yes">☀ Sun safe</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+      <span class="badge badge-moon">☽ Moon ok</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">The strongest protective stone in your collection. Creates energetic boundaries, repels psychic attack, transmutes negative energy into neutral or positive energy. Essential for shadow and threshold work.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Extremely durable — moonlight, sunlight, earth, or selenite plate all work. One of the most forgiving stones to charge.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Saturn ruling your chart (Capricorn rising, Saturn in 1st) — black tourmaline is your most Saturnian stone. It holds boundaries the way Saturn demands them: firm, unyielding, necessary. Your threshold guardian sigil pairs powerfully with this stone.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Place at the four corners of your home or ritual space. Carry during banishing or protection workings. Your Threshold Guardian sigil was made for this stone.</p>
+  </div>
+</div>
+
+<!-- ─── BLUE CHALCEDONY ─── -->
+<div class="crystal-card" data-tags="all moon-only">
+  <div class="card-header">
+    <div class="card-planet-glyph">☽</div>
+    <div class="card-name">Blue Chalcedony</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Moon · Neptune</span>
+      <span class="tag tag-element">Water</span>
+      <span class="tag tag-number">9</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-brief">☀ Brief only</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+      <span class="badge badge-moon">☽ Moonlight preferred</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Gentleness, calm speech, emotional soothing. Reduces anxiety and promotes peaceful communication. One of the most supportive stones for nervous system regulation.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Moonlight preferred. Brief sunlight is fine.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Pisces Moon in 2nd house — supports emotional security and the felt sense of being held. Particularly useful during PMDD and emotional volatility cycles.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Hold during meditation or grounding after intense workings. Place on the body during rest or recovery. Bedside stone.</p>
+  </div>
+</div>
+
+<!-- ─── CARNELIAN AGATE ─── -->
+<div class="crystal-card" data-tags="all sun-safe">
+  <div class="card-header">
+    <div class="card-planet-glyph">☉</div>
+    <div class="card-name">Carnelian Agate</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Sun · Mars</span>
+      <span class="tag tag-element">Fire</span>
+      <span class="tag tag-number">5–6</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-yes">☀ Thrives in sun</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Confidence, creative fire, motivation, sensuality. Bridges intention and execution — the get-up-and-do-it stone. One of the few that genuinely compensates for what's missing in a chart.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Solar charging is ideal — this stone genuinely thrives in sunlight. One of the few where sun is the preferred method.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">With 0 fire in your natal chart, carnelian compensates energetically. Useful on days when the earth-heavy chart feels too slow or stuck. Also supports your New Moon initiator energy.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Hold or wear when beginning new projects or cycles. New Moon initiations. Pair with your green candle for abundance workings.</p>
+  </div>
+</div>
+
+<!-- ─── CHALCOPYRITE ─── -->
+<div class="crystal-card" data-tags="all moon-only no-water">
+  <div class="card-header">
+    <div class="card-planet-glyph">♀</div>
+    <div class="card-name">Chalcopyrite</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Venus · Sun</span>
+      <span class="tag tag-element">Fire · Earth</span>
+      <span class="tag tag-number">9</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-no">☀ NO sun — damages iridescence</span>
+      <span class="badge badge-water-no">🌊 NOT water safe — toxic</span>
+      <span class="badge badge-moon">☽ Moonlight only</span>
+      <span class="badge badge-warn">⚠ Contains sulfur — wash hands</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Mystical vision, confidence, removing energy blockages, access to higher consciousness. The iridescent surface reflects its function — it shows you different angles of the same thing. A ceremonial stone, not an everyday carry.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">⚠ Moonlight only. Sunlight damages the iridescence and can alter the mineral structure. Never submerge — contains sulfur compounds that can be toxic in water.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Venus in your 12th house — chalcopyrite works in the unseen, the hidden beauty, the magnetism that operates below the surface. This is your most liminal stone materially speaking.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Use during visionary or psychic work. Treat as ceremonial — not for everyday carry. Place on altar for visibility and mystery workings.</p>
+  </div>
+</div>
+
+<!-- ─── CITRINE ─── -->
+<div class="crystal-card" data-tags="all sun-safe">
+  <div class="card-header">
+    <div class="card-planet-glyph">☉</div>
+    <div class="card-name">Citrine <span style="font-size:.75em;opacity:.5">×2</span></div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Sun · Mercury</span>
+      <span class="tag tag-element">Fire</span>
+      <span class="tag tag-number">6</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-yes">☀ Solar charging recommended</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Abundance, confidence, joy, mental clarity. One of the few stones said to never need cleansing as it transmutes rather than absorbs energy. A manifestation workhorse.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Solar charging is excellent — citrine thrives in sunlight. One of the stones that genuinely benefits from sun.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Directly supports your job manifestation and abundance workings. Mercury in Aquarius — sharpens innovative thinking. Your green candle working pairs well with citrine on the altar.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Place on abundance altar. Use during manifestation workings. Keep in workspace. One piece active, one piece charging — rotate them.</p>
+  </div>
+</div>
+
+<!-- ─── CLEAR QUARTZ ─── -->
+<div class="crystal-card" data-tags="all sun-safe">
+  <div class="card-header">
+    <div class="card-planet-glyph">✦</div>
+    <div class="card-name">Clear Quartz <span style="font-size:.75em;opacity:.5">×2</span></div>
+    <div class="card-tags">
+      <span class="tag tag-planet">All Planets</span>
+      <span class="tag tag-element">All Elements</span>
+      <span class="tag tag-number">4</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-yes">☀ Sun safe</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+      <span class="badge badge-moon">☽ Moon ok</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">The master amplifier. Enhances properties of every stone near it, clarifies intention, stores and transmits energy. A ritual workhorse that adapts to any working. Raw pieces tend to carry stronger, less refined energy than tumbled.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Moonlight or sunlight — extremely durable and versatile. Also charges nearby stones when placed with them.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Universal amplifier for every placement in your chart. Particularly useful for amplifying your 12th house stellium during liminal workings. Place near Florida water during crafting.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Place near other stones to amplify them. Program with specific intentions. Use as a wand or directional tool during ritual. Excellent charging companion.</p>
+  </div>
+</div>
+
+<!-- ─── EMERALD ─── -->
+<div class="crystal-card" data-tags="all moon-only">
+  <div class="card-header">
+    <div class="card-planet-glyph">♀</div>
+    <div class="card-name">Emerald</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Venus · Mercury</span>
+      <span class="tag tag-element">Earth · Water</span>
+      <span class="tag tag-number">4</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-brief">☀ Brief only</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+      <span class="badge badge-moon">☽ Moonlight preferred</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Love, abundance, wisdom, loyalty, heart opening. Where rose quartz asks gently, emerald magnetizes with authority. It does not beg; it draws. A stone of sovereign love.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Moonlight preferred. Brief sunlight is fine but avoid prolonged exposure.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Venus in your 12th house (Capricorn) — emerald brings Venus energy into visible expression, compensating for the hidden placement. Also resonates with your green tourmaline pendant; they share elemental language.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Use in love and attraction workings. Place on the heart during meditation. Carry during situations requiring both love and authority.</p>
+  </div>
+</div>
+
+<!-- ─── FALCON'S EYE ─── -->
+<div class="crystal-card" data-tags="all sun-safe">
+  <div class="card-header">
+    <div class="card-planet-glyph">♄</div>
+    <div class="card-name">Falcon's Eye <span style="font-size:.75em;opacity:.5">(Blue Tiger's Eye)</span></div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Saturn · Sun</span>
+      <span class="tag tag-element">Earth · Fire</span>
+      <span class="tag tag-number">4</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-brief">☀ Brief sun ok</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+      <span class="badge badge-moon">☽ Moon ok</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Clarity of perception, seeing through illusion, calm confidence, psychic awareness. Where regular tiger's eye brings courage, falcon's eye brings elevated vision — the ability to see clearly from above the situation.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Moonlight or brief sunlight. Versatile stone.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Scorpio MC and Pluto conjunct MC — a stone of strategic vision and seeing what others miss. Relevant to your destiny of transformation and the public-facing power of your chart.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Use during divination and psychic work. Carry when navigating complex situations requiring clear sight over emotional reaction.</p>
+  </div>
+</div>
+
+<!-- ─── FERRUGINOUS QUARTZ ─── -->
+<div class="crystal-card" data-tags="all sun-safe no-water">
+  <div class="card-header">
+    <div class="card-planet-glyph">♂</div>
+    <div class="card-name">Ferruginous Quartz</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Mars · Saturn</span>
+      <span class="tag tag-element">Earth · Fire</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-yes">☀ Sun safe</span>
+      <span class="badge badge-water-no">🌊 Caution — iron can rust</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Grounding, strength, resilience, energetic fortification. The iron content connects it to Mars energy — this is a warrior stone in the endurance sense, not the aggression sense. Stabilizes the aura and builds energetic stamina.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Sunlight or earth preferred. Avoid prolonged water exposure — iron content can rust or leach.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Mars in your 12th house (Capricorn) — ferruginous quartz brings hidden Mars energy into physical expression. Useful when you need to act but feel internally blocked from doing so.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Hold during workings requiring sustained energy or stamina. Grounding after intense ritual. Root chakra work.</p>
+  </div>
+</div>
+
+<!-- ─── FLUORITE ─── -->
+<div class="crystal-card" data-tags="all moon-only no-water priority">
+  <div class="card-header">
+    <div class="priority-star">★ priority</div>
+    <div class="card-planet-glyph">☿</div>
+    <div class="card-name">Fluorite</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Mercury · Neptune</span>
+      <span class="tag tag-element">Air · Water</span>
+      <span class="tag tag-number">7</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-no">☀ NO sun — fades and brittles</span>
+      <span class="badge badge-water-no">🌊 NOT water safe — dissolves slowly</span>
+      <span class="badge badge-moon">☽ Moonlight only</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Mental clarity, focus, psychic shielding, absorbing and neutralizing negative energy. An excellent stone for AuDHD specifically — it quiets mental noise without dulling perception. One of your most practically useful stones.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">⚠ Moonlight only. Fades badly in sunlight and can become brittle with heat. Never submerge — dissolves slowly in water over time.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Mercury in Aquarius (fast, scattered mental energy) meets Neptune in 12th (porous psychic boundaries) — fluorite addresses both. It is arguably one of your most personally necessary stones given your neurology and your 12th house stellium.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Place on your desk or workspace. Hold during focused work or study. Use as psychic shield before entering draining environments. Pair with black tourmaline for full energetic protection.</p>
+  </div>
+</div>
+
+<!-- ─── HOWLITE ─── -->
+<div class="crystal-card" data-tags="all moon-only no-water">
+  <div class="card-header">
+    <div class="card-planet-glyph">☽</div>
+    <div class="card-name">Howlite</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Moon</span>
+      <span class="tag tag-element">Air · Water</span>
+      <span class="tag tag-number">2</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-brief">☀ Brief only</span>
+      <span class="badge badge-water-no">🌊 NOT water safe — porous, can crumble</span>
+      <span class="badge badge-moon">☽ Moonlight preferred</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Calming, patience, reducing anxiety and stress, promoting restful sleep. Absorbs and neutralizes anger. Extremely useful for PMDD, emotional regulation, and nervous system support.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">Moonlight preferred. Avoid prolonged sunlight. Never submerge — porous stone can absorb water and become damaged or crumble.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Pisces Moon in 2nd house — howlite supports emotional security and nervous system regulation. Directly useful for CPTSD and PMDD cycles.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Place under pillow for sleep. Hold during emotional regulation. Place near (not in) ritual baths. Pair with lepidolite for sleep and mood support.</p>
+  </div>
+</div>
+
+<!-- ─── LABRADORITE ─── -->
+<div class="crystal-card" data-tags="all moon-only priority">
+  <div class="card-header">
+    <div class="priority-star">★ priority</div>
+    <div class="card-planet-glyph">♅</div>
+    <div class="card-name">Labradorite</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Uranus · Moon</span>
+      <span class="tag tag-element">Water · Air</span>
+      <span class="tag tag-number">6–7</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-brief">☀ Brief only</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+      <span class="badge badge-moon">☽ Moonlight strongly preferred</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Magic, transformation, psychic protection, revealing what is hidden. The stone of the liminal — it literally shows different colors from different angles, which is exactly what it does energetically. Protects the aura while expanding psychic perception simultaneously.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">Moonlight strongly preferred — this is energetically a moon and mystery stone. Sunlight works but misses the point entirely.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Uranus in 12th, Moon in Pisces, North Node in 12th, Hekate in 8th — labradorite speaks to all of it. It is the stone of the threshold keeper, which is your entire chart in one metaphor. This is one of your most important stones.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Wear or carry during any psychic or liminal work. Place on your altar. Use during Hekate devotional work. Essential for your practice. Do not leave this one in a drawer.</p>
+  </div>
+</div>
+
+<!-- ─── LEOPARD SKIN JASPER ─── -->
+<div class="crystal-card" data-tags="all sun-safe">
+  <div class="card-header">
+    <div class="card-planet-glyph">♄</div>
+    <div class="card-name">Leopard Skin Jasper</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Earth · Saturn</span>
+      <span class="tag tag-element">Earth</span>
+      <span class="tag tag-number">2</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-yes">☀ Sun safe</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Shamanic journeying, connection to animal guides, self-healing, grounding spiritual experiences into the body. Particularly useful for integrating intense spiritual or emotional experiences after the fact.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Earth or brief sunlight. Very forgiving stone.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">North Node in 12th (soul path through hidden realms) — leopard skin jasper helps you bring back what you find in those realms and anchor it in the physical body. Integration stone.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Hold during meditation or journeying. Use after intense ritual to ground and integrate. Post-working recovery stone.</p>
+  </div>
+</div>
+
+<!-- ─── LEPIDOLITE ─── -->
+<div class="crystal-card" data-tags="all moon-only no-water priority">
+  <div class="card-header">
+    <div class="priority-star">★ priority</div>
+    <div class="card-planet-glyph">♃</div>
+    <div class="card-name">Lepidolite</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Jupiter · Neptune</span>
+      <span class="tag tag-element">Water · Air</span>
+      <span class="tag tag-number">8</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-no">☀ NO sun — fades</span>
+      <span class="badge badge-water-no">🌊 NOT water safe — contains aluminum</span>
+      <span class="badge badge-moon">☽ Moonlight only</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Emotional balance, anxiety relief, transition support, natural sleep aid. Contains natural lithium — which is why it genuinely calms the nervous system in a measurable way. One of the most therapeutically relevant stones for bipolar, PMDD, and anxiety.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">⚠ Moonlight only. Fades and can become damaged with sun exposure. Never submerge — contains aluminum compounds.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Given bipolar 2, PMDD, and CPTSD in your lived experience — lepidolite is arguably your most therapeutically important stone. It works on the nervous system level, not just the energetic one. Keep it close during difficult cycles.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Hold during emotional regulation. Place under pillow for sleep. Use during new or full moon workings when emotions run high. Pair with howlite for sleep support.</p>
+  </div>
+</div>
+
+<!-- ─── LAPIS LAZULI ─── -->
+<div class="crystal-card" data-tags="all moon-only no-water priority">
+  <div class="card-header">
+    <div class="priority-star">★ priority</div>
+    <div class="card-planet-glyph">♃</div>
+    <div class="card-name">Lapis Lazuli</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Jupiter · Saturn</span>
+      <span class="tag tag-element">Water · Air</span>
+      <span class="tag tag-number">3</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-brief">☀ Brief only — gold flecks can fade</span>
+      <span class="badge badge-water-no">🌊 NOT water safe — contains pyrite, can oxidize</span>
+      <span class="badge badge-moon">☽ Moonlight preferred</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Wisdom, truth, psychic activation, royal power. One of the oldest sacred stones in human history — worn by royalty and priestesses across Egypt, Mesopotamia, and beyond. Activates the third eye and throat: seeing truth and speaking it.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">Moonlight preferred. Avoid prolonged sunlight — can fade the gold pyrite flecks. Never submerge — contains pyrite which can oxidize in water.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Cleopatra in your 8th house (stationary) — lapis lazuli was literally Cleopatra's stone. The Egyptians ground it for the iconic blue eye makeup worn by royalty. This is a direct correspondence to your Cleopatra archetype and the sovereign power running through your 8th house.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Use during divination and psychic work. Wear or carry when you need to speak difficult truths. Place on altar during sovereignty and royal power workings.</p>
+  </div>
+</div>
+
+<!-- ─── MALACHITE ─── -->
+<div class="crystal-card" data-tags="all moon-only no-water priority">
+  <div class="card-header">
+    <div class="priority-star">★ priority</div>
+    <div class="card-planet-glyph">♀</div>
+    <div class="card-name">Malachite</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Venus</span>
+      <span class="tag tag-element">Earth</span>
+      <span class="tag tag-number">9</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-no">☀ NO sun</span>
+      <span class="badge badge-water-no">🌊 TOXIC when wet — never submerge</span>
+      <span class="badge badge-warn">⚠ Wash hands after handling raw</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Transformation, emotional healing, protection, drawing out what is hidden. Malachite breaks old patterns — sometimes dramatically and without warning. It reveals what needs to change and accelerates the process. This is not a gentle stone. Use deliberately.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">⚠ Moonlight only. Never submerge in water — toxic when wet due to copper carbonate content. Wash hands after handling raw or rough malachite. Tumbled is generally safer to handle.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Pluto conjunct MC, transformation as public destiny — malachite is your Pluto stone. It accelerates what your chart already demands: that transformation is not optional for you, only inevitable. Use with full intention.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Use during intentional transformation workings. Place on altar during tower moment processing. Not for casual carry — this stone means business and responds in kind.</p>
+  </div>
+</div>
+
+<!-- ─── OBSIDIAN ─── -->
+<div class="crystal-card" data-tags="all sun-safe priority">
+  <div class="card-header">
+    <div class="priority-star">★ priority</div>
+    <div class="card-planet-glyph">♇</div>
+    <div class="card-name">Obsidian</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Pluto · Saturn</span>
+      <span class="tag tag-element">Earth · Fire</span>
+      <span class="tag tag-number">1</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-yes">☀ Sun safe</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Truth, psychic protection, shadow work, revealing what is hidden from the self. One of the most powerful mirrors — it shows you exactly what you are not ready to see. Use intentionally, not casually. Volcanic glass by origin, liminal by nature.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Moonlight or earth most aligned energetically. Sunlight works but is less appropriate for a shadow stone.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Scorpio MC, Pluto conjunct MC, Hekate in 8th — obsidian is deeply aligned with your destiny placements. Your public path IS shadow work, which means this stone is essentially a professional tool for you.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Use for scrying. Shadow work sessions. Place near your ritual space during Hekate devotionals. Recommended for active shadow work periods, not passive carry.</p>
+  </div>
+</div>
+
+<!-- ─── OCEAN JASPER ─── -->
+<div class="crystal-card" data-tags="all sun-safe">
+  <div class="card-header">
+    <div class="card-planet-glyph">♆</div>
+    <div class="card-name">Ocean Jasper</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Neptune · Moon</span>
+      <span class="tag tag-element">Water</span>
+      <span class="tag tag-number">6</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-brief">☀ Brief sun ok</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+      <span class="badge badge-moon">☽ Moonlight preferred</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Joy, emotional release, patience, interconnectedness. Brings the energy of tides — ebb and flow, natural rhythm, trust in cycles. A nurturing stone that moves stuck emotions without force.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Moonlight or brief sunlight. Forgiving stone.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Pisces Moon, your Florida water practice, your connection to water magic — ocean jasper supports the intuitive and cyclical nature of your practice. Place near your Florida water during crafting.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Use during emotional healing work. Hold during moon cycle rituals. Place near Florida water during crafting.</p>
+  </div>
+</div>
+
+<!-- ─── OLIVE OPAL ─── -->
+<div class="crystal-card" data-tags="all moon-only no-water">
+  <div class="card-header">
+    <div class="card-planet-glyph">♀</div>
+    <div class="card-name">Olive Opal</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Venus · Neptune</span>
+      <span class="tag tag-element">Water · Earth</span>
+      <span class="tag tag-number">8</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-no">☀ NO sun — can crack</span>
+      <span class="badge badge-water-no">🌊 NOT water safe — can crack when wet</span>
+      <span class="badge badge-moon">☽ Moonlight only</span>
+      <span class="badge badge-warn">⚠ Handle with care — fragile stone</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Emotional amplification, creativity, inspiration, access to deeper emotional truth. Opal amplifies whatever energy is present — do not use during emotional destabilization. When you are centered, it expands; when you are chaotic, it intensifies.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">⚠ Moonlight only. Opal contains water in its crystalline structure — sunlight and heat can cause cracking and crazing. Never submerge. Handle carefully.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Venus in 12th, Neptune in 12th — olive opal works in the hidden emotional realm your chart naturally occupies. Use when you are in a stable, centered state and want to go deeper.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Use during creative and artistic workings. Place on altar during Venus or Neptune rituals. Not recommended for everyday carry — treat as ceremonial.</p>
+  </div>
+</div>
+
+<!-- ─── PURPURITE ─── -->
+<div class="crystal-card" data-tags="all moon-only no-water">
+  <div class="card-header">
+    <div class="card-planet-glyph">♅</div>
+    <div class="card-name">Purpurite</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Uranus · Neptune</span>
+      <span class="tag tag-element">Air · Water</span>
+      <span class="tag tag-number">7</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-brief">☀ Brief only</span>
+      <span class="badge badge-water-no">🌊 NOT water safe — manganese phosphate</span>
+      <span class="badge badge-moon">☽ Moonlight preferred</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Spiritual liberation, breaking free from limitation, speaking truth even when it costs something. Supports quantum leaps in consciousness — sudden knowing, sudden freedom. A relatively rare stone.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">Moonlight preferred. Never submerge — manganese phosphate, not water safe. Brief sunlight fine.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Uranus in your 12th house (hidden revolutionary energy) and Lilith in your 1st (refusal to submit) — purpurite supports the part of you that refuses to be contained by expectation or convention. Pair with black tourmaline for grounded liberation.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Use during workings of liberation, breaking cycles, or speaking difficult truths. Useful during Personal Year 9 release workings.</p>
+  </div>
+</div>
+
+<!-- ─── PYRITE ─── -->
+<div class="crystal-card" data-tags="all sun-safe no-water">
+  <div class="card-header">
+    <div class="card-planet-glyph">☉</div>
+    <div class="card-name">Pyrite <span style="font-size:.75em;opacity:.5">×2</span></div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Sun · Mars</span>
+      <span class="tag tag-element">Fire · Earth</span>
+      <span class="tag tag-number">9</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-yes">☀ Sun safe</span>
+      <span class="badge badge-water-no">🌊 NOT water safe — rusts and releases sulfuric acid</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Abundance, confidence, willpower, energetic shielding. The "fool's gold" misnomer obscures real power — pyrite is genuinely effective for manifestation and creates a strong energetic shield. It protects what it helps you build.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">Sunlight or moonlight — durable stone. Never submerge in water — will rust and the iron sulfide can release sulfuric acid over time.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Directly supports your job manifestation working. Pair with citrine on your abundance altar for maximum material manifestation. Also supports the practical, Capricorn-rising grounding of your desires into reality.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Place on abundance altar. Carry during professional high-stakes situations. Use in manifestation workings alongside your green candle.</p>
+  </div>
+</div>
+
+<!-- ─── RAINBOW MOONSTONE ─── -->
+<div class="crystal-card" data-tags="all moon-only priority">
+  <div class="card-header">
+    <div class="priority-star">★ priority</div>
+    <div class="card-planet-glyph">☽</div>
+    <div class="card-name">Rainbow Moonstone</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Moon</span>
+      <span class="tag tag-element">Water</span>
+      <span class="tag tag-number">4</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-brief">☀ Brief only</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+      <span class="badge badge-moon">☽ Full moon charging — ritual in itself</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Intuition, divine feminine, new beginnings, emotional intelligence, psychic sight. The adularescence (the blue shimmer) is captured moonlight made visible. Deeply connected to cycles, tides, and the rhythm of change.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">Moonlight only — ideally during the full moon. The charging itself is a ritual. Avoid prolonged sunlight.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">You were born on a New Moon with Moon in Pisces — rainbow moonstone is one of your most personally significant stones. It reflects your birth signature back to you. This stone and your chart are in direct conversation.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Wear or carry during new and full moon rituals. Use during divination. Place on your altar during lunar cycle work. Your most natural lunar companion.</p>
+  </div>
+</div>
+
+<!-- ─── RED JASPER ─── -->
+<div class="crystal-card" data-tags="all sun-safe">
+  <div class="card-header">
+    <div class="card-planet-glyph">♂</div>
+    <div class="card-name">Red Jasper</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Mars</span>
+      <span class="tag tag-element">Fire · Earth</span>
+      <span class="tag tag-number">6</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-yes">☀ Sun safe</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Grounding, stamina, physical vitality, courage, stability during crisis. Mars energy in its most stabilizing form — not aggression but endurance. The stone that keeps you standing when everything wants to knock you down.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Sunlight or earth — thrives in solar energy. Very forgiving and durable.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Mars in your 12th house (hidden, internalized) — red jasper brings that hidden Mars energy into the physical body, supporting stamina and grounded action when the internal resources feel inaccessible.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Hold during physically or emotionally demanding periods. Grounding after intense ritual work. Carry during times of prolonged stress.</p>
+  </div>
+</div>
+
+<!-- ─── RHODOCHROSITE ─── -->
+<div class="crystal-card" data-tags="all moon-only no-water priority">
+  <div class="card-header">
+    <div class="priority-star">★ priority</div>
+    <div class="card-planet-glyph">♀</div>
+    <div class="card-name">Rhodochrosite</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Venus · Mars</span>
+      <span class="tag tag-element">Fire · Water</span>
+      <span class="tag tag-number">4</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-brief">☀ Brief only — fades</span>
+      <span class="badge badge-water-no">🌊 NOT water safe — manganese carbonate dissolves</span>
+      <span class="badge badge-moon">☽ Moonlight preferred</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Self-love, emotional healing, compassion, inner child work. One of the most powerful stones for healing deep emotional wounds — particularly those formed in childhood. Loving in the way a good therapist is: honest, patient, and unwilling to let you stay small.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">Moonlight preferred. Avoid prolonged sunlight — can fade. Never submerge — manganese carbonate can dissolve slowly in water.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Chiron in Leo in your 7th house — the wound around being seen, being loved, being chosen in partnership. Rhodochrosite works directly on the Chiron wound. This is one of your most specifically targeted healing stones.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Use during inner child or trauma healing work. Place over the heart during meditation. Use during CPTSD processing. Handle with gentleness — it meets you where you are.</p>
+  </div>
+</div>
+
+<!-- ─── ROSE QUARTZ ─── -->
+<div class="crystal-card" data-tags="all moon-only">
+  <div class="card-header">
+    <div class="card-planet-glyph">♀</div>
+    <div class="card-name">Rose Quartz <span style="font-size:.75em;opacity:.5">×2</span></div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Venus</span>
+      <span class="tag tag-element">Water</span>
+      <span class="tag tag-number">6</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-brief">☀ Brief only — pink fades</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+      <span class="badge badge-moon">☽ Moonlight preferred</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Unconditional love, self-worth, emotional healing, gentle heart opening. Most powerful directed inward — it teaches self-love first, which is the foundation everything else is built on.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">Moonlight preferred. The pink color comes from trace minerals that are light-sensitive — repeated sun exposure causes fading over time.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Venus in 12th (hidden love and self-worth operating below the surface) — rose quartz brings Venus energy into conscious awareness. Particularly useful during Personal Year 9 clearing: releasing old self-worth wounds before the new cycle begins.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Place in your bedroom. Hold during self-love workings. Pair with rhodochrosite for deep emotional healing. Bath ritual companion (safe in water).</p>
+  </div>
+</div>
+
+<!-- ─── SERPENTINE ─── -->
+<div class="crystal-card" data-tags="all sun-safe priority">
+  <div class="card-header">
+    <div class="priority-star">★ priority</div>
+    <div class="card-planet-glyph">♄</div>
+    <div class="card-name">Serpentine</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Saturn · Mercury</span>
+      <span class="tag tag-element">Earth</span>
+      <span class="tag tag-number">8</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-brief">☀ Brief sun ok</span>
+      <span class="badge badge-water-no">🌊 Caution — some varieties contain asbestos</span>
+      <span class="badge badge-moon">☽ Moonlight preferred</span>
+      <span class="badge badge-warn">⚠ Do not submerge unknown varieties</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Kundalini awakening, ancient wisdom, protection, clearing energetic pathways. Moves and clears energy rather than holding it — a stone of active flow rather than passive stability. Despite resembling jade, it works very differently.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note warn">Moonlight or earth preferred. Do not submerge without knowing the specific variety — some serpentine contains asbestos mineral fibers that should not be suspended in water you touch or drink.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">The serpent as your core symbol (Serath Raen, your tattoo intention, Hekate's serpents) — it is genuinely notable that you own serpentine. The stone chose you as much as you chose it. It connects to the serpent archetype running through your entire practice.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Use during kundalini or energy clearing work. Place along the spine during body-based practices. Work with during Hekate devotionals.</p>
+  </div>
+</div>
+
+<!-- ─── SMOKY QUARTZ ─── -->
+<div class="crystal-card" data-tags="all sun-safe">
+  <div class="card-header">
+    <div class="card-planet-glyph">♄</div>
+    <div class="card-name">Smoky Quartz</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Saturn · Pluto</span>
+      <span class="tag tag-element">Earth</span>
+      <span class="tag tag-number">2–8</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-brief">☀ Brief sun ok</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+      <span class="badge badge-moon">☽ Moon preferred</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Grounding, transmutation, protection from negativity, anchoring light into matter. Absorbs and neutralizes dense or negative energy rather than deflecting it. One of the most effective post-working clearing stones you own.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Moonlight or brief sunlight. Versatile and durable.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Saturn ruling your chart, Pluto conjunct MC — smoky quartz is the grounded, earthy expression of your two most powerful planetary forces. Use it to anchor big energy into practical reality after transformation workings.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Use after intense shadow work or ritual to clear residual energy. Place at the base of your altar. Carry during emotionally heavy periods.</p>
+  </div>
+</div>
+
+<!-- ─── SODALITE ─── -->
+<div class="crystal-card" data-tags="all moon-only">
+  <div class="card-header">
+    <div class="card-planet-glyph">☿</div>
+    <div class="card-name">Sodalite</div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Mercury · Moon</span>
+      <span class="tag tag-element">Air · Water</span>
+      <span class="tag tag-number">4</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-brief">☀ Brief only — can fade</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+      <span class="badge badge-moon">☽ Moonlight preferred</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Mental clarity, intuition, truth, emotional balance, psychic development. Bridges the rational and intuitive minds — for someone who both thinks deeply and feels deeply, sodalite creates a functional connection between those two modes.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Moonlight preferred. Avoid prolonged sunlight — can fade over time.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">Mercury conjunct Sun in Aquarius (analytical, electric) meets Moon in Pisces (deeply intuitive, sometimes unmoored) — sodalite is built specifically for this internal dynamic. It bridges the two parts of you that can sometimes feel at odds.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Hold during journaling or when integrating emotional experiences intellectually. Use during divination that requires both intuition and interpretation. Tarot reading companion.</p>
+  </div>
+</div>
+
+<!-- ─── AVENTURINE (light) ─── -->
+<div class="crystal-card" data-tags="all sun-safe">
+  <div class="card-header">
+    <div class="card-planet-glyph">♀</div>
+    <div class="card-name">Aventurine (Light) <span style="font-size:.75em;opacity:.5">×2</span></div>
+    <div class="card-tags">
+      <span class="tag tag-planet">Venus · Mercury</span>
+      <span class="tag tag-element">Earth · Air</span>
+      <span class="tag tag-number">3</span>
+    </div>
+    <div class="safety-row">
+      <span class="badge badge-sun-yes">☀ Sun safe</span>
+      <span class="badge badge-water-yes">🌊 Water safe</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="section-head">Properties</p>
+    <p class="card-text">Luck, opportunity, optimism, prosperity, emotional calm. Green aventurine is the classic "opportunity stone" — it doesn't create luck so much as it opens you to recognizing and acting on it. Gentle heart energy without the intensity of emerald or rose quartz.</p>
+    <p class="section-head">Charging</p>
+    <p class="charging-note ok">Sunlight or moonlight — very forgiving and durable. One of the easiest stones to maintain.</p>
+    <p class="section-head">Chart Resonance</p>
+    <p class="chart-resonance">You already use green aventurine actively in your practice. It resonates with your Venus energy and your abundance workings, and pairs naturally with your green tourmaline pendant. Earth-coded Venus for your Capricorn placements.</p>
+    <p class="section-head">Ritual Use</p>
+    <p class="ritual-use">Use in abundance and opportunity workings. Carry when job searching or in new professional situations. Pair with citrine and pyrite on your abundance altar.</p>
+  </div>
+</div>
+
+</main>
+
+<!-- QUICK REFERENCE -->
+<div class="quick-ref">
+  <div class="qr-card">
+    <div class="qr-title">Quick Reference — Charging & Safety</div>
+    <div class="qr-grid">
+      <div class="qr-section">
+        <div class="qr-section-title" style="color:#e0b840">☀ Sun Safe (can solar charge)</div>
+        <div class="qr-list">Agate · Black Tourmaline · Carnelian · Citrine · Clear Quartz · Falcon's Eye · Ferruginous Quartz · Leopard Skin Jasper · Obsidian · Pyrite · Red Jasper · Smoky Quartz (brief) · Aventurine</div>
+      </div>
+      <div class="qr-section">
+        <div class="qr-section-title" style="color:#90b8d8">☽ Moonlight Only (no sun)</div>
+        <div class="qr-list">Amethyst · Aquamarine · Chalcopyrite · Fluorite · Howlite · Labradorite · Lepidolite · Malachite · Olive Opal · Rainbow Moonstone · Rose Quartz · Rhodochrosite</div>
+      </div>
+      <div class="qr-section">
+        <div class="qr-section-title" style="color:#c05040">🌊 Not Water Safe</div>
+        <div class="qr-list">Chalcopyrite (toxic) · Fluorite · Howlite · Lapis Lazuli · Lepidolite · Malachite ⚠ toxic · Olive Opal · Purpurite · Pyrite · Rhodochrosite · Serpentine (caution)</div>
+      </div>
+      <div class="qr-section">
+        <div class="qr-section-title" style="color:var(--gold-lt)">★ Priority for Your Chart</div>
+        <div class="qr-list">Labradorite · Rainbow Moonstone · Lepidolite · Rhodochrosite · Lapis Lazuli · Serpentine · Amethyst · Fluorite · Malachite · Obsidian</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>in the liminale · crystal compendium · library</footer>
+
+<script>
+let currentFilter = 'all';
+
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterCards();
+}
+
+function filterCards() {
+  const query = document.getElementById('search').value.toLowerCase();
+  const cards = document.querySelectorAll('.crystal-card');
+  let visible = 0;
+  cards.forEach(card => {
+    const name = card.querySelector('.card-name').textContent.toLowerCase();
+    const body = card.textContent.toLowerCase();
+    const tags = card.dataset.tags || '';
+    const matchesFilter = currentFilter === 'all' || tags.includes(currentFilter);
+    const matchesSearch = !query || body.includes(query);
+    const show = matchesFilter && matchesSearch;
+    card.classList.toggle('hidden', !show);
+    if(show) visible++;
+  });
+  document.getElementById('results-count').textContent = visible;
+}
+</script>
+</body>
+</html>
