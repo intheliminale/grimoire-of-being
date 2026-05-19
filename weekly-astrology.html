@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weekly Astrology — In The Liminale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --void:#080610;--deep:#120e22;--plum:#1e1630;--violet:#2e2048;
+      --vlt:#4a3468;--lav:#9878c0;--mist:#d0c4e8;--ivory:#ede8dc;
+      --amber:#c88a28;--gold:#e0a830;--gold-lt:#f8cc60;
+      --burg:#6a1e2e;--rose:#c04060;--shadow:rgba(8,6,16,0.7);
+      --peak:#4a7838;--high:#c88a28;--mid:#2e4878;--low:#3a1828;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--void);color:var(--mist);font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;line-height:1.7;min-height:100vh}
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
+
+    header{text-align:center;padding:4rem 2rem 2rem;position:relative;z-index:1}
+    header::after{content:'';display:block;width:220px;height:1px;background:linear-gradient(to right,transparent,var(--amber),transparent);margin:1.5rem auto 0}
+    .eyebrow{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.55em;text-transform:uppercase;color:var(--amber);margin-bottom:.8rem;opacity:.8}
+    h1{font-family:'Cinzel',serif;font-size:clamp(2rem,5vw,3rem);font-weight:400;color:var(--ivory);letter-spacing:.07em}
+    h1 em{display:block;font-family:'IM Fell English',serif;font-style:italic;font-size:.38em;color:var(--lav);margin-top:.4rem;letter-spacing:.06em;opacity:.85}
+
+    main{max-width:1000px;margin:0 auto;padding:2rem 2rem 6rem;position:relative;z-index:1}
+    .section-label{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.48em;text-transform:uppercase;color:var(--amber);opacity:.8;margin-bottom:.4rem}
+    .rule{width:100%;height:1px;background:linear-gradient(to right,var(--vlt),transparent);margin:.4rem 0 2rem}
+
+    /* GENERATE BUTTON */
+    .gen-card{background:var(--deep);border:1px solid #2e204855;border-radius:12px;padding:2rem;margin-bottom:2rem;position:relative;overflow:hidden}
+    .gen-card::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,#c88a2810 0%,transparent 70%);pointer-events:none}
+    .gen-hint{font-style:italic;color:var(--lav);margin-bottom:1.5rem;font-size:.95rem;opacity:.85;line-height:1.6}
+    .gen-btn{display:block;width:100%;padding:1rem;background:linear-gradient(135deg,var(--vlt),var(--burg));border:1px solid #4a346855;border-radius:8px;font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-lt);cursor:pointer;transition:opacity .3s,transform .2s}
+    .gen-btn:hover{opacity:.88;transform:translateY(-2px)}
+    .gen-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+    .week-range{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--amber);opacity:.7;text-align:center;margin-bottom:1rem}
+
+    /* LOADING */
+    .loading{display:none;text-align:center;padding:2rem;font-style:italic;color:var(--lav);opacity:.7}
+    .loading.visible{display:block;animation:pulse 2s ease-in-out infinite}
+    .loading-dots::after{content:'';animation:dots 1.5s steps(4,end) infinite}
+    @keyframes dots{0%,20%{content:''}40%{content:'.'}60%{content:'..'}80%,100%{content:'...'}}
+    @keyframes pulse{0%,100%{opacity:.5}50%{opacity:.9}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+    /* RESULTS WRAPPER */
+    #results{display:none}
+    #results.visible{display:block;animation:fadeUp .5s ease}
+
+    /* WEEK OVERVIEW */
+    .week-header{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--amber);opacity:.75;text-align:center;margin-bottom:1.2rem}
+
+    /* DAY CALENDAR */
+    .day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.5rem;margin-bottom:2rem}
+    .day-col{background:var(--deep);border:1px solid #2e204844;border-radius:10px;overflow:hidden;transition:transform .2s,box-shadow .2s;cursor:pointer}
+    .day-col:hover{transform:translateY(-2px);box-shadow:0 6px 24px var(--shadow)}
+    .day-col.selected{border-color:var(--amber)}
+    .day-header{padding:.6rem .4rem;text-align:center;border-bottom:1px solid #2e204833}
+    .day-name{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ivory);display:block;margin-bottom:.1rem}
+    .day-date{font-size:.75rem;color:var(--lav);opacity:.6}
+    .day-ruler{font-size:.65rem;opacity:.5;text-align:center;padding:.2rem 0;border-bottom:1px solid #2e204822;color:var(--lav)}
+    .day-pips{padding:.5rem .3rem;display:flex;flex-direction:column;gap:.3rem}
+    .pip{border-radius:3px;height:6px;width:100%;transition:opacity .2s}
+    .pip-peak{background:#4a9838}
+    .pip-high{background:#c88a28}
+    .pip-mid{background:#2e5090}
+    .pip-low{background:#3a2030;opacity:.4}
+    .pip-label{font-family:'Cinzel',serif;font-size:.42rem;letter-spacing:.06em;text-transform:uppercase;color:var(--lav);opacity:.5;padding:.1rem .3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    /* LEGEND */
+    .legend{display:flex;gap:1.2rem;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap}
+    .legend-item{display:flex;align-items:center;gap:.4rem;font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--lav);opacity:.7}
+    .legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+    /* DAY DETAIL */
+    .day-detail{background:var(--deep);border:1px solid #2e204855;border-radius:12px;padding:2rem;margin-bottom:2rem;display:none}
+    .day-detail.visible{display:block;animation:fadeUp .3s ease}
+    .dd-header{font-family:'Cinzel',serif;font-size:1.1rem;color:var(--ivory);margin-bottom:.3rem;letter-spacing:.04em}
+    .dd-sub{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);opacity:.75;margin-bottom:1.2rem}
+    .dd-categories{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem;margin-bottom:1.5rem}
+    .dd-cat{background:var(--plum);border-radius:8px;padding:.9rem 1rem;border:1px solid #2e204844;cursor:pointer;transition:all .3s}
+    .dd-cat:hover{border-color:var(--amber)}
+    .dd-cat.active{border-color:var(--gold-lt);background:#251840}
+    .dd-cat-icon{font-size:1.2rem;margin-bottom:.2rem}
+    .dd-cat-name{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ivory);margin-bottom:.2rem}
+    .dd-cat-rating{font-size:.8rem;font-style:italic}
+    .rating-peak{color:#6aaa50}
+    .rating-high{color:var(--gold)}
+    .rating-mid{color:#6080b0}
+    .rating-low{color:#804050;opacity:.7}
+
+    /* DEEP READING */
+    .deep-reading{background:var(--plum);border:1px solid #4a346855;border-radius:10px;padding:1.5rem;margin-top:1rem}
+    .dr-label{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.25em;text-transform:uppercase;color:var(--amber);opacity:.75;margin-bottom:.8rem}
+    .dr-content{font-size:.95rem;color:var(--mist);line-height:1.8}
+    .dr-content h3{font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-lt);margin:1.2rem 0 .4rem;opacity:.9}
+    .dr-content p{margin-bottom:.8rem}
+    .dr-content strong{color:var(--ivory)}
+
+    /* WEEK SUMMARY */
+    .week-summary{background:var(--deep);border:1px solid #2e204855;border-radius:12px;padding:2rem;margin-bottom:2rem}
+    .ws-title{font-family:'Cinzel',serif;font-size:1rem;color:var(--ivory);margin-bottom:.4rem;letter-spacing:.04em}
+    .ws-body{font-size:.95rem;color:var(--mist);line-height:1.8}
+    .ws-body h3{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-lt);margin:1rem 0 .3rem;opacity:.9}
+    .ws-body p{margin-bottom:.7rem}
+
+    /* BEST DAYS SUMMARY */
+    .best-days{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.7rem;margin-bottom:2rem}
+    .best-day-chip{background:var(--deep);border:1px solid #2e204844;border-radius:8px;padding:.9rem 1rem}
+    .bdc-cat{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);opacity:.75;margin-bottom:.3rem}
+    .bdc-day{font-family:'Cinzel',serif;font-size:.85rem;color:var(--ivory);margin-bottom:.15rem}
+    .bdc-why{font-size:.8rem;font-style:italic;color:var(--lav);opacity:.8;line-height:1.4}
+
+    @media(max-width:700px){
+      .day-grid{grid-template-columns:repeat(4,1fr)}
+      .day-grid .day-col:nth-child(n+5){display:none}
+      .pip-label{display:none}
+      .dd-categories{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">☽ &nbsp;✦&nbsp; ♄</p>
+  <h1>Weekly Astrology<em>Cycles · In The Liminale</em></h1>
+</header>
+
+<main>
+
+  <p class="section-label">Your Magical Week</p>
+  <div class="rule"></div>
+
+  <div class="gen-card">
+    <p class="gen-hint">Your personalized magical calendar — built from current planetary transits mapped against your natal chart. Each day is rated for ten categories of magical and practical work. Tap any day to go deeper, or tap a category to get a full reading for that energy.</p>
+    <div class="week-range" id="week-range"></div>
+    <button class="gen-btn" id="gen-btn" onclick="generateWeek()">✦ &nbsp;Generate My Week&nbsp; ✦</button>
+    <div class="loading" id="gen-loading">Reading the planetary field<span class="loading-dots"></span></div>
+  </div>
+
+  <div id="results">
+
+    <!-- LEGEND -->
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#4a9838"></div>Peak</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#c88a28"></div>High</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#2e5090"></div>Moderate</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#3a2030"></div>Low / Rest</div>
+    </div>
+
+    <!-- DAY CALENDAR -->
+    <div class="week-header" id="calendar-header"></div>
+    <div class="day-grid" id="day-grid"></div>
+
+    <!-- BEST DAYS SUMMARY -->
+    <p class="section-label">Best Days at a Glance</p>
+    <div class="rule"></div>
+    <div class="best-days" id="best-days"></div>
+
+    <!-- DAY DETAIL -->
+    <div class="day-detail" id="day-detail">
+      <div class="dd-header" id="dd-header"></div>
+      <div class="dd-sub" id="dd-sub"></div>
+      <div class="dd-categories" id="dd-categories"></div>
+      <div class="deep-reading" id="deep-reading" style="display:none">
+        <div class="dr-label" id="dr-label"></div>
+        <div class="dr-content" id="dr-content"></div>
+      </div>
+    </div>
+
+    <!-- WEEK SUMMARY -->
+    <p class="section-label">Week Overview</p>
+    <div class="rule"></div>
+    <div class="week-summary">
+      <div class="ws-title">Overall Energetic Forecast</div>
+      <div class="ws-body" id="week-summary-body"></div>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+// ═══ CATEGORIES ═══
+const CATEGORIES = [
+  { id: 'spiritual',   icon: '🌿', name: 'Spiritual Practice',   short: 'Spiritual' },
+  { id: 'abundance',  icon: '💰', name: 'Abundance & Finance',   short: 'Abundance' },
+  { id: 'glamour',    icon: '✨', name: 'Glamour & Beauty',      short: 'Glamour' },
+  { id: 'hex',        icon: '🖤', name: 'Hex / Banishing',       short: 'Hex/Ban' },
+  { id: 'love',       icon: '💘', name: 'Love & Relationships',  short: 'Love' },
+  { id: 'divination', icon: '🔮', name: 'Divination & Psychic',  short: 'Divination' },
+  { id: 'health',     icon: '🌱', name: 'Health & Body',         short: 'Health' },
+  { id: 'protection', icon: '🛡', name: 'Protection Work',       short: 'Protection' },
+  { id: 'career',     icon: '🚀', name: 'Career & Ambition',     short: 'Career' },
+  { id: 'dreams',     icon: '🌙', name: 'Dream Work & Shadow',   short: 'Dreams' }
+];
+
+const RATINGS = ['low','mid','high','peak'];
+const RATING_LABELS = { low:'Rest day', mid:'Moderate', high:'Favorable', peak:'Peak day' };
+const RATING_CLASSES = { low:'rating-low', mid:'rating-mid', high:'rating-high', peak:'rating-peak' };
+
+const DAY_RULERS = ['Sun ☉','Moon ☽','Mars ♂','Mercury ☿','Jupiter ♃','Venus ♀','Saturn ♄'];
+const DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DAY_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+let weekData = null;
+let selectedDay = null;
+let selectedCat = null;
+
+// ═══ DATE UTILS ═══
+function getWeekDates() {
+  const today = new Date();
+  const day = today.getDay();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - day + (day === 0 ? -6 : 1));
+  return Array.from({length:7}, (_, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    return d;
+  });
+}
+
+function formatDateShort(d) {
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+function formatDateFull(d) {
+  return d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+}
+
+// ═══ MOON CALC (from lunar-phases) ═══
+const KNOWN_NEW_MOON = new Date(Date.UTC(2000,0,6,18,14,0));
+const LUNAR_CYCLE = 29.530588853;
+function getMoonAge(date){
+  const diff=(date-KNOWN_NEW_MOON)/(1000*60*60*24);
+  return ((diff%LUNAR_CYCLE)+LUNAR_CYCLE)%LUNAR_CYCLE;
+}
+function getMoonPhase(date){
+  const age=getMoonAge(date);
+  const pct=age/LUNAR_CYCLE;
+  if(pct<.02||pct>=.98)return'New Moon';
+  if(pct<.25)return'Waxing Crescent';
+  if(pct<.27)return'First Quarter';
+  if(pct<.48)return'Waxing Gibbous';
+  if(pct<.52)return'Full Moon';
+  if(pct<.73)return'Waning Gibbous';
+  if(pct<.77)return'Last Quarter';
+  return'Waning Crescent';
+}
+function getMoonSign(date){
+  const signs=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+  const days=(date-new Date(Date.UTC(2000,0,1)))/(1000*60*60*24);
+  const lon=(days*13.176396)%360;
+  return signs[Math.floor(((lon+360)%360)/30)];
+}
+
+// ═══ GENERATE ═══
+async function generateWeek() {
+  const btn = document.getElementById('gen-btn');
+  const loading = document.getElementById('gen-loading');
+  btn.disabled = true;
+  loading.classList.add('visible');
+  document.getElementById('results').classList.remove('visible');
+
+  const dates = getWeekDates();
+  const dayInfos = dates.map(d => ({
+    name: DAY_NAMES[d.getDay()],
+    date: formatDateShort(d),
+    ruler: DAY_RULERS[d.getDay()],
+    moonPhase: getMoonPhase(d),
+    moonSign: getMoonSign(d),
+    dayOfWeek: d.getDay()
+  }));
+
+  const today = new Date();
+  const prompt = `You are an expert astrologer giving a personalized magical weekly forecast. You know this person's natal chart intimately:
+
+NATAL CHART (Tropical, Placidus):
+- Sun: Aquarius 16°56' 1st House
+- Moon: Pisces 16°29' 2nd House — born on a New Moon
+- Rising: Capricorn 25°54' — Saturn rules the chart
+- Mercury: Aquarius 12°37' 1st House
+- Venus: Capricorn 14°57' 12th House
+- Mars: Capricorn 21°04' 12th House
+- Jupiter Rx: Virgo 12°27' 7th House
+- Saturn: Aquarius 10°08' 1st House
+- Uranus: Capricorn 15°47' 12th House
+- Neptune: Capricorn 17°33' 12th House
+- Pluto: Scorpio 22°51' conjunct MC 10th House
+- North Node: Capricorn 12th House
+- Lilith: Aquarius 1st House
+- Chiron: Leo 7th House
+- Life Path: 11 (Master Number)
+- Personal Year: 9 (completion and clearing — through Feb 2027)
+- 12th house stellium: Venus, Mars, Uranus, Neptune in Capricorn
+- Key asteroids: Hekate + Cleopatra (stationary) in 8th House
+
+Today: ${today.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}
+
+THIS WEEK'S DAYS:
+${dayInfos.map((d,i) => `${d.name} ${d.date}: Ruled by ${d.ruler}, Moon in ${d.moonSign} (${d.moonPhase})`).join('\n')}
+
+YOUR TASK: Generate a complete magical weekly forecast. For each of the 7 days, rate ALL 10 categories using exactly one of: "peak", "high", "mid", "low". Then provide a brief reason (1 sentence) for the most notable rating each day.
+
+CATEGORIES: spiritual, abundance, glamour, hex, love, divination, health, protection, career, dreams
+
+Also provide:
+1. A week overview (3-4 paragraphs, personal and specific to her chart)
+2. Best day for each category with one-sentence reason
+3. Any major energetic themes or warnings for the week
+
+Consider: planetary day rulers, moon sign and phase, her natal placements, her Personal Year 9, her New Moon birth signature, her 12th house stellium, Saturn ruling her chart.
+
+Respond in valid JSON only, no markdown:
+{
+  "days": [
+    {
+      "name": "Monday",
+      "ratings": {
+        "spiritual": "peak",
+        "abundance": "mid",
+        "glamour": "high",
+        "hex": "low",
+        "love": "high",
+        "divination": "peak",
+        "health": "mid",
+        "protection": "high",
+        "career": "mid",
+        "dreams": "peak"
+      },
+      "highlight": "One sentence about the most notable energy today"
+    }
+  ],
+  "bestDays": {
+    "spiritual": { "day": "Monday", "reason": "..." },
+    "abundance": { "day": "Saturday", "reason": "..." },
+    "glamour": { "day": "Friday", "reason": "..." },
+    "hex": { "day": "Tuesday", "reason": "..." },
+    "love": { "day": "Friday", "reason": "..." },
+    "divination": { "day": "Monday", "reason": "..." },
+    "health": { "day": "Sunday", "reason": "..." },
+    "protection": { "day": "Saturday", "reason": "..." },
+    "career": { "day": "Thursday", "reason": "..." },
+    "dreams": { "day": "Monday", "reason": "..." }
+  },
+  "weekOverview": "Full week overview here — 3-4 paragraphs, personal, chart-specific, honest about challenges and opportunities"
+}`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 3000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error.message);
+    const raw = data.content[0].text.trim().replace(/```json|```/g,'').trim();
+    weekData = JSON.parse(raw);
+    renderResults(dates, weekData);
+  } catch(err) {
+    console.error(err);
+    alert('Something went wrong generating your week. Please try again.');
+  } finally {
+    btn.disabled = false;
+    loading.classList.remove('visible');
+  }
+}
+
+// ═══ RENDER RESULTS ═══
+function renderResults(dates, data) {
+  const results = document.getElementById('results');
+
+  // Calendar header
+  document.getElementById('calendar-header').textContent =
+    `${formatDateShort(dates[0])} — ${formatDateShort(dates[6])}`;
+
+  // Day grid
+  const grid = document.getElementById('day-grid');
+  grid.innerHTML = '';
+  data.days.forEach((day, i) => {
+    const date = dates[i];
+    const col = document.createElement('div');
+    col.className = 'day-col';
+    col.dataset.idx = i;
+
+    const ratings = day.ratings;
+    const pipHTML = CATEGORIES.map(cat => `
+      <div class="pip pip-${ratings[cat.id] || 'low'}" title="${cat.name}: ${RATING_LABELS[ratings[cat.id] || 'low']}"></div>
+      <div class="pip-label">${cat.short}</div>
+    `).join('');
+
+    col.innerHTML = `
+      <div class="day-header">
+        <span class="day-name">${DAY_SHORT[date.getDay()]}</span>
+        <span class="day-date">${date.getDate()}</span>
+      </div>
+      <div class="day-ruler">${DAY_RULERS[date.getDay()]}</div>
+      <div class="day-pips">${pipHTML}</div>`;
+
+    col.addEventListener('click', () => selectDay(i, dates, data));
+    grid.appendChild(col);
+  });
+
+  // Best days
+  const bestDays = document.getElementById('best-days');
+  bestDays.innerHTML = CATEGORIES.map(cat => {
+    const bd = data.bestDays[cat.id] || {};
+    return `<div class="best-day-chip">
+      <div class="bdc-cat">${cat.icon} ${cat.name}</div>
+      <div class="bdc-day">${bd.day || '—'}</div>
+      <div class="bdc-why">${bd.reason || ''}</div>
+    </div>`;
+  }).join('');
+
+  // Week summary
+  document.getElementById('week-summary-body').innerHTML =
+    (data.weekOverview || '').split('\n\n').map(p => `<p>${p}</p>`).join('');
+
+  results.classList.add('visible');
+
+  // Auto-select today
+  const today = new Date().getDay();
+  const todayIdx = dates.findIndex(d => d.getDay() === today);
+  if (todayIdx >= 0) selectDay(todayIdx, dates, data);
+}
+
+// ═══ SELECT DAY ═══
+function selectDay(idx, dates, data) {
+  selectedDay = idx;
+  selectedCat = null;
+
+  // Highlight selected
+  document.querySelectorAll('.day-col').forEach((c,i) => c.classList.toggle('selected', i===idx));
+
+  const day = data.days[idx];
+  const date = dates[idx];
+  const detail = document.getElementById('day-detail');
+
+  document.getElementById('dd-header').textContent = `${day.name}, ${formatDateShort(date)}`;
+  document.getElementById('dd-sub').textContent =
+    `${DAY_RULERS[date.getDay()]} · Moon in ${getMoonSign(date)} · ${getMoonPhase(date)}`;
+
+  // Category cards
+  const catsEl = document.getElementById('dd-categories');
+  catsEl.innerHTML = CATEGORIES.map(cat => {
+    const r = day.ratings[cat.id] || 'low';
+    return `<div class="dd-cat" data-cat="${cat.id}" onclick="selectCategory('${cat.id}', ${idx})">
+      <div class="dd-cat-icon">${cat.icon}</div>
+      <div class="dd-cat-name">${cat.name}</div>
+      <div class="dd-cat-rating ${RATING_CLASSES[r]}">${RATING_LABELS[r]}</div>
+    </div>`;
+  }).join('');
+
+  // Show highlight
+  document.getElementById('deep-reading').style.display = 'none';
+
+  detail.classList.add('visible');
+  detail.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ═══ SELECT CATEGORY — deep reading via API ═══
+async function selectCategory(catId, dayIdx) {
+  if (selectedCat === catId && selectedDay === dayIdx) return;
+  selectedCat = catId;
+
+  document.querySelectorAll('.dd-cat').forEach(c =>
+    c.classList.toggle('active', c.dataset.cat === catId));
+
+  const cat = CATEGORIES.find(c => c.id === catId);
+  const day = weekData.days[dayIdx];
+  const dates = getWeekDates();
+  const date = dates[dayIdx];
+  const rating = day.ratings[catId] || 'mid';
+
+  const deepReading = document.getElementById('deep-reading');
+  const drLabel = document.getElementById('dr-label');
+  const drContent = document.getElementById('dr-content');
+
+  drLabel.textContent = `${cat.icon} ${cat.name} — ${day.name} ${formatDateShort(date)}`;
+  drContent.innerHTML = '<p style="font-style:italic;opacity:.6">Reading the field<span style="animation:dots 1.5s steps(4,end) infinite;display:inline-block">...</span></p>';
+  deepReading.style.display = 'block';
+
+  try {
+    const prompt = `You are an expert astrologer giving a brief, specific reading for one category on one day.
+
+Person's natal chart:
+- Sun: Aquarius 1st House, Moon: Pisces 2nd House (born New Moon), Rising: Capricorn (Saturn rules)
+- Mercury: Aquarius 1st, Venus: Capricorn 12th, Mars: Capricorn 12th
+- Jupiter Rx: Virgo 7th, Saturn: Aquarius 1st, Uranus: Capricorn 12th, Neptune: Capricorn 12th
+- Pluto: Scorpio conjunct MC 10th House, North Node: Capricorn 12th
+- Lilith: Aquarius 1st, Chiron: Leo 7th, Hekate + Cleopatra (stationary) 8th House
+- Life Path 11, Personal Year 9 (completion)
+- 12th house stellium: Venus, Mars, Uranus, Neptune in Capricorn
+
+Day: ${day.name}, ${formatDateShort(date)}
+Day ruler: ${DAY_RULERS[date.getDay()]}
+Moon: ${getMoonSign(date)} (${getMoonPhase(date)})
+Category: ${cat.name}
+Overall rating for this category today: ${rating} (${RATING_LABELS[rating]})
+
+Write a direct, personal reading for this category on this specific day (3-4 paragraphs). Include:
+1. Why the energy is rated ${rating} for ${cat.name} today given the planetary conditions
+2. Specific actions, rituals, or practices to maximize or navigate this energy
+3. Any cautions or timing notes
+4. One practical tip she can use today
+
+Be direct, warm, and chart-specific. Reference her actual placements. No fluff.`;
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 800,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error.message);
+
+    const text = data.content[0].text
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\n\n/g,'</p><p>')
+      .replace(/^/,'<p>').replace(/$/,'</p>');
+    drContent.innerHTML = text;
+
+  } catch(err) {
+    drContent.innerHTML = '<p style="color:#c04060">Could not load deep reading. Please try again.</p>';
+  }
+}
+
+// ═══ INIT ═══
+const dates = getWeekDates();
+document.getElementById('week-range').textContent =
+  `Week of ${formatDateShort(dates[0])} — ${formatDateShort(dates[6])}`;
+</script>
+</body>
+</html>
