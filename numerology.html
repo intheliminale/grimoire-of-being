@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Numerology — In The Liminale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --void:#080610;--deep:#120e22;--plum:#1e1630;--violet:#2e2048;
+      --vlt:#4a3468;--lav:#9878c0;--mist:#d0c4e8;--ivory:#ede8dc;
+      --amber:#c88a28;--gold:#e0a830;--gold-lt:#f8cc60;
+      --burg:#6a1e2e;--rose:#c04060;--shadow:rgba(8,6,16,0.7);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--void);color:var(--mist);font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;line-height:1.7;min-height:100vh}
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
+
+    header{text-align:center;padding:4rem 2rem 2.5rem;position:relative;z-index:1}
+    header::after{content:'';display:block;width:220px;height:1px;background:linear-gradient(to right,transparent,var(--amber),transparent);margin:1.5rem auto 0}
+    .eyebrow{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.55em;text-transform:uppercase;color:var(--amber);margin-bottom:.8rem;opacity:.8}
+    h1{font-family:'Cinzel',serif;font-size:clamp(2rem,5vw,3rem);font-weight:400;color:var(--ivory);letter-spacing:.07em}
+    h1 em{display:block;font-family:'IM Fell English',serif;font-style:italic;font-size:.38em;color:var(--lav);margin-top:.4rem;letter-spacing:.06em;opacity:.85}
+
+    main{max-width:900px;margin:0 auto;padding:2rem 2rem 6rem;position:relative;z-index:1}
+
+    .section-label{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.48em;text-transform:uppercase;color:var(--amber);opacity:.8;margin-bottom:.4rem}
+    .rule{width:100%;height:1px;background:linear-gradient(to right,var(--vlt),transparent);margin:.4rem 0 2rem}
+    .section-title{font-family:'Cinzel',serif;font-size:clamp(1.2rem,2.5vw,1.6rem);font-weight:400;color:var(--ivory);margin-bottom:.4rem;letter-spacing:.05em}
+
+    /* PERSONAL NUMBERS GRID */
+    .personal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem;margin-bottom:3rem}
+
+    .num-card{background:var(--deep);border:1px solid #2e204855;border-radius:12px;padding:1.8rem;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s}
+    .num-card:hover{transform:translateY(-3px);box-shadow:0 10px 40px var(--shadow)}
+    .num-card::before{content:'';position:absolute;top:-40px;right:-40px;width:140px;height:140px;background:radial-gradient(circle,var(--glow-color,#c88a28)12 0%,transparent 70%);pointer-events:none;opacity:.15}
+
+    .num-card.master{border-color:#c88a2844}
+    .num-card.master::before{--glow-color:#c88a28}
+    .num-card.birthday::before{--glow-color:#9878c0}
+    .num-card.personal-year::before{--glow-color:#4a7838}
+
+    .num-big{font-family:'Cinzel',serif;font-size:3.5rem;font-weight:400;color:var(--gold-lt);line-height:1;margin-bottom:.3rem;letter-spacing:.02em}
+    .num-type{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);opacity:.8;margin-bottom:.8rem}
+    .num-title{font-family:'IM Fell English',serif;font-style:italic;font-size:1.2rem;color:var(--ivory);margin-bottom:.6rem}
+    .num-desc{font-size:.9rem;color:var(--mist);line-height:1.7;opacity:.9}
+    .num-personal{font-style:italic;font-size:.88rem;color:var(--lav);margin-top:.8rem;padding-top:.8rem;border-top:1px solid #2e204844;line-height:1.6}
+
+    /* LOOKUP */
+    .lookup-card{background:var(--deep);border:1px solid #2e204855;border-radius:12px;padding:2rem;margin-bottom:2rem;position:relative;overflow:hidden}
+    .lookup-card::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,#c88a2810 0%,transparent 70%);pointer-events:none}
+
+    .lookup-inner{display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap}
+    .lookup-field{flex:1;min-width:180px}
+    .lookup-field label{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ivory);display:block;margin-bottom:.5rem;opacity:.7}
+    .lookup-input{width:100%;background:var(--plum);border:1px solid #2e204877;border-radius:8px;padding:.85rem 1.2rem;font-family:'Cinzel',serif;font-size:1.8rem;color:var(--gold-lt);outline:none;transition:border-color .3s;letter-spacing:.1em;text-align:center}
+    .lookup-input:focus{border-color:var(--amber);box-shadow:0 0 0 3px #c88a2812}
+    .lookup-btn{padding:.88rem 2rem;background:linear-gradient(135deg,var(--amber),#8a5010);border:none;border-radius:8px;font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;color:var(--void);font-weight:600;cursor:pointer;transition:opacity .3s,transform .2s;white-space:nowrap}
+    .lookup-btn:hover{opacity:.9;transform:translateY(-2px)}
+
+    /* RESULT */
+    #result{display:none;animation:fadeUp .5s ease}
+    #result.visible{display:block}
+
+    .result-card{background:var(--plum);border:1px solid #4a346855;border-radius:12px;padding:2rem;margin-top:1.5rem}
+    .result-number{font-family:'Cinzel',serif;font-size:4rem;font-weight:400;color:var(--gold-lt);line-height:1;margin-bottom:.3rem;text-align:center}
+    .result-label{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.35em;text-transform:uppercase;color:var(--amber);text-align:center;margin-bottom:1rem;opacity:.8}
+    .result-title{font-family:'IM Fell English',serif;font-style:italic;font-size:1.5rem;color:var(--ivory);text-align:center;margin-bottom:1.2rem}
+    .result-rule{width:120px;height:1px;background:linear-gradient(to right,transparent,var(--amber),transparent);margin:0 auto 1.2rem}
+
+    .result-section{margin-bottom:1rem}
+    .result-section-head{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.25em;text-transform:uppercase;color:var(--amber);opacity:.75;margin-bottom:.3rem}
+    .result-text{font-size:.95rem;color:var(--mist);line-height:1.7}
+    .result-keywords{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
+    .kw{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);border:1px solid #c88a2844;padding:.2rem .65rem;border-radius:3px;background:#c88a2808}
+
+    .result-reduction{font-style:italic;font-size:.88rem;color:var(--lav);opacity:.7;text-align:center;margin-top:1rem}
+
+    .not-found{text-align:center;padding:2rem;font-style:italic;color:var(--lav);opacity:.6}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:600px){.personal-grid{grid-template-columns:1fr}.lookup-inner{flex-direction:column}}
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">☽ &nbsp;✦&nbsp; ♄</p>
+  <h1>Numerology<em>Library · In The Liminale</em></h1>
+</header>
+
+<main>
+
+  <!-- PERSONAL NUMBERS -->
+  <p class="section-label">Your Numbers</p>
+  <div class="rule"></div>
+
+  <div class="personal-grid">
+
+    <div class="num-card master">
+      <div class="num-big">11</div>
+      <div class="num-type">Life Path Number</div>
+      <div class="num-title">The Illuminator</div>
+      <div class="num-desc">The Master Number of spiritual insight, intuition, and the bridge between the earthly and divine. 11s are here to inspire, illuminate, and channel higher wisdom into the world. The path is rarely easy — the sensitivity that makes you gifted also makes you feel everything more intensely.</div>
+      <div class="num-personal">Your 11 Life Path combined with Aquarius Sun and Pisces Moon creates a rare configuration — the visionary who both sees the future and feels the present completely. You are built to transmit, not just receive.</div>
+    </div>
+
+    <div class="num-card birthday">
+      <div class="num-big">6</div>
+      <div class="num-type">Birthday Number</div>
+      <div class="num-title">The Nurturer</div>
+      <div class="num-desc">Born on the 6th — the number of love, responsibility, beauty, and service. You carry a deep instinct to care, create harmony, and hold space for others. 6 energy is also connected to the body, aesthetics, and the home as sacred space.</div>
+      <div class="num-personal">Your 6 birthday sits in tension with your 1st house independence (Sun, Mercury, Saturn, Lilith in Aquarius) — you are both deeply relational and fiercely sovereign. The work is learning which relationships are worthy of your particular brand of devotion.</div>
+    </div>
+
+    <div class="num-card personal-year">
+      <div class="num-big">9</div>
+      <div class="num-type">Personal Year (through Feb 6, 2027)</div>
+      <div class="num-title">The Completion</div>
+      <div class="num-desc">Personal Year 9 is the final chapter of a nine-year cycle. This is the year of release, culmination, clearing, and surrender. Things that no longer serve will fall away — sometimes gently, sometimes not. What you release now creates space for the entirely new cycle beginning in 2027.</div>
+      <div class="num-personal">Your Year 9 lands during a period of significant spiritual initiation — your pink full moon dedication, your sigil work, your grimoire. You are not just closing a chapter; you are completing a self. The version of you entering Year 1 in February 2027 will be substantially different from who you are now.</div>
+    </div>
+
+  </div>
+
+  <!-- NUMBER LOOKUP -->
+  <p class="section-label">Number Lookup</p>
+  <div class="rule"></div>
+
+  <div class="lookup-card">
+    <p style="font-style:italic;color:var(--lav);margin-bottom:1.2rem;font-size:.95rem;opacity:.85">Enter any number from 1 to 9999 — single digits, master numbers, angel numbers, repeating sequences, or anything you keep seeing.</p>
+    <div class="lookup-inner">
+      <div class="lookup-field">
+        <label for="num-input">Your Number</label>
+        <input class="lookup-input" type="number" id="num-input" min="1" max="9999" placeholder="e.g. 1111" oninput="this.value=this.value.slice(0,4)" onkeydown="if(event.key==='Enter')lookupNumber()"/>
+      </div>
+      <button class="lookup-btn" onclick="lookupNumber()">✦ &nbsp;Look Up</button>
+    </div>
+
+    <div id="result">
+      <div class="result-card">
+        <div class="result-number" id="res-number">—</div>
+        <div class="result-label" id="res-label">—</div>
+        <div class="result-title" id="res-title">—</div>
+        <div class="result-rule"></div>
+        <div class="result-section">
+          <div class="result-section-head">Meaning</div>
+          <div class="result-text" id="res-meaning">—</div>
+        </div>
+        <div class="result-section" id="res-keywords-wrap">
+          <div class="result-section-head">Keywords</div>
+          <div class="result-keywords" id="res-keywords"></div>
+        </div>
+        <div class="result-section" id="res-shadow-wrap">
+          <div class="result-section-head">Shadow Side</div>
+          <div class="result-text" id="res-shadow">—</div>
+        </div>
+        <div class="result-section" id="res-ritual-wrap">
+          <div class="result-section-head">In Practice</div>
+          <div class="result-text" id="res-ritual">—</div>
+        </div>
+        <div class="result-reduction" id="res-reduction"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════
+// NUMBER DATABASE
+// ═══════════════════════════════════════
+const NUMBERS = {
+  // ── SINGLE DIGITS ──
+  1: {
+    label: 'Single Digit',
+    title: 'The Initiator',
+    meaning: 'The number of beginnings, independence, and singular focus. 1 carries the energy of the pioneer — the one who goes first, who carves the path, who refuses to follow. It is the spark before the flame. In numerology, 1 is the root of all creation.',
+    keywords: ['New beginnings','Independence','Leadership','Courage','Originality','Self-reliance','Ambition'],
+    shadow: 'Isolation, arrogance, stubbornness, inability to collaborate, impatience with process.',
+    ritual: 'Invoke 1 energy on New Moons, at the start of new projects, or when you need to step into your own authority. Candle color: red or gold. Planet: Sun.'
+  },
+  2: {
+    label: 'Single Digit',
+    title: 'The Diplomat',
+    meaning: 'The number of duality, partnership, intuition, and balance. 2 is the first number that knows it is not alone — it seeks connection, seeks to harmonize, seeks to understand the other. It carries the energy of the moon: receptive, reflective, cyclical.',
+    keywords: ['Partnership','Balance','Intuition','Receptivity','Cooperation','Sensitivity','Peace'],
+    shadow: 'Codependency, indecision, people-pleasing, losing self in others, passive aggression.',
+    ritual: 'Invoke 2 energy for relationship work, healing, and intuitive development. Works well during waxing moon phases. Planet: Moon.'
+  },
+  3: {
+    label: 'Single Digit',
+    title: 'The Creator',
+    meaning: 'The number of expression, creativity, joy, and manifestation through words. 3 is where 1 and 2 meet and produce something new — it is inherently generative. Communication, art, humor, and the ability to transmit ideas all live here.',
+    keywords: ['Creativity','Expression','Joy','Communication','Art','Optimism','Manifestation'],
+    shadow: 'Scattered energy, superficiality, gossip, difficulty completing things, emotional volatility.',
+    ritual: 'Invoke 3 for creative projects, communication spells, and joy workings. Strong on Wednesdays. Planet: Jupiter and Mercury.'
+  },
+  4: {
+    label: 'Single Digit',
+    title: 'The Builder',
+    meaning: 'The number of stability, structure, foundation, and disciplined effort. 4 is the number of the four directions, four elements, four seasons — it is the scaffolding reality is built on. Hard work, patience, and integrity are its gifts.',
+    keywords: ['Stability','Structure','Hard work','Patience','Integrity','Foundation','Order'],
+    shadow: 'Rigidity, resistance to change, workaholism, stubbornness, fear of the unknown.',
+    ritual: 'Invoke 4 for protection of the home, grounding, and long-term manifestation. Strong on Saturdays. Planet: Saturn and Uranus.'
+  },
+  5: {
+    label: 'Single Digit',
+    title: 'The Freedom Seeker',
+    meaning: 'The number of change, freedom, sensory experience, and adaptability. 5 cannot be contained — it must move, explore, experience, expand. It is the midpoint of the single digits, and carries the tension of knowing both stability (1-4) and expansion (6-9).',
+    keywords: ['Freedom','Change','Adventure','Sensuality','Adaptability','Travel','Experience'],
+    shadow: 'Restlessness, commitment issues, overindulgence, inability to settle, recklessness.',
+    ritual: 'Invoke 5 when you need to break free from stagnation, embrace change, or expand your world. Planet: Mercury.'
+  },
+  6: {
+    label: 'Single Digit · Your Birthday Number',
+    title: 'The Nurturer',
+    meaning: 'The number of love, responsibility, beauty, home, and service. 6 is the most harmonious single digit — it naturally creates beauty, seeks to heal, and holds space for others. It is deeply connected to the body, aesthetics, and the concept of the home as sacred.',
+    keywords: ['Love','Responsibility','Beauty','Service','Healing','Home','Harmony'],
+    shadow: 'Martyrdom, perfectionism, meddling, self-sacrifice at the expense of self, codependency.',
+    ritual: 'Invoke 6 for love workings, home blessing, healing, and beauty rituals. Strong on Fridays. Planet: Venus.'
+  },
+  7: {
+    label: 'Single Digit',
+    title: 'The Seeker',
+    meaning: 'The number of spiritual seeking, inner wisdom, solitude, and the pursuit of truth. 7 is the most introspective single digit — it pulls away from the outer world to find meaning in the inner one. Mysticism, research, and deep knowing live here.',
+    keywords: ['Wisdom','Spirituality','Solitude','Introspection','Mystery','Truth','Research'],
+    shadow: 'Isolation, distrust, coldness, escapism, paralysis by analysis, disconnection from others.',
+    ritual: 'Invoke 7 for divination, spiritual study, shadow work, and solitary practice. Strong on Mondays and during waning moon. Planet: Neptune.'
+  },
+  8: {
+    label: 'Single Digit',
+    title: 'The Powerhouse',
+    meaning: 'The number of power, abundance, authority, and karmic balance. 8 is the number of infinite possibility — its shape is the lemniscate (infinity symbol) turned upright. Material success, personal power, and the consequences of past actions all flow through 8.',
+    keywords: ['Power','Abundance','Authority','Karma','Success','Ambition','Legacy'],
+    shadow: 'Greed, control, ruthlessness, material obsession, abuse of power, workaholism.',
+    ritual: 'Invoke 8 for abundance manifestation, career advancement, and reclaiming personal power. Strong on Saturdays. Planet: Saturn.'
+  },
+  9: {
+    label: 'Single Digit · Your Personal Year',
+    title: 'The Completion',
+    meaning: 'The number of completion, wisdom earned through experience, compassion, and release. 9 contains all other numbers within it (9+1=10→1, 9+2=11→2 etc.) — it is the culmination. Humanitarian impulse, spiritual maturity, and the ability to let go define its energy.',
+    keywords: ['Completion','Wisdom','Compassion','Release','Humanitarianism','Endings','Transcendence'],
+    shadow: 'Inability to release, martyrdom, self-righteousness, living in the past, bitterness.',
+    ritual: 'Invoke 9 for release rituals, banishing, completion ceremonies, and healing old wounds. Strong during waning moon and dark moon. Planet: Mars.'
+  },
+
+  // ── MASTER NUMBERS ──
+  11: {
+    label: 'Master Number · Your Life Path',
+    title: 'The Illuminator',
+    meaning: 'The first Master Number — 11 carries the intensity of 1 doubled, amplified, and spiritualized. It is the number of the channel, the one who transmits higher frequencies into human form. 11s are here not to live ordinary lives but to serve as conduits between the seen and unseen worlds. The nervous system is often highly sensitive, the psychic antennae wide open.',
+    keywords: ['Intuition','Illumination','Inspiration','Channeling','Sensitivity','Vision','Leadership through example'],
+    shadow: 'Nervous system overwhelm, fear of own power, self-doubt despite obvious gifts, volatility, grandiosity or collapse — rarely in between.',
+    ritual: 'When you see 11:11 or 11 repeatedly, it is a reminder of your function as a channel. Stop. Notice what you were just thinking. The universe is timestamping that moment. Planet: Moon and Uranus.'
+  },
+  22: {
+    label: 'Master Number',
+    title: 'The Master Builder',
+    meaning: 'The second Master Number — 22 is called the Master Builder because it combines the visionary insight of 11 with the practical power of 4. Where 11 sees, 22 builds. Where 11 transmits, 22 manifests into permanent form. 22s are here to create structures, institutions, and legacies that outlast their personal lifetimes.',
+    keywords: ['Mastery','Vision made real','Legacy','Large-scale impact','Discipline','Architecture of reality'],
+    shadow: 'Overwhelming pressure of potential, paralysis at the scale of the vision, workaholism, difficulty with personal relationships.',
+    ritual: 'Invoke 22 when beginning something meant to be permanent — a business, a creative body of work, a spiritual lineage. Planet: Uranus and Saturn.'
+  },
+  33: {
+    label: 'Master Number',
+    title: 'The Master Teacher',
+    meaning: 'The third Master Number and the most spiritually evolved — 33 is the Christ consciousness number, the number of unconditional love expressed through teaching, healing, and service. It is exceptionally rare as a Life Path and carries enormous responsibility. 33s are here to heal through love.',
+    keywords: ['Unconditional love','Teaching','Healing','Selfless service','Compassion','Spiritual mastery'],
+    shadow: 'Martyrdom, self-neglect, difficulty receiving, carrying others at cost to self, spiritual bypassing.',
+    ritual: 'Invoke 33 for healing work, teaching, and any act of unconditional service. Planet: Jupiter and Neptune.'
+  },
+  44: {
+    label: 'Master Number',
+    title: 'The Master Healer of Systems',
+    meaning: 'The fourth Master Number — 44 combines the structural power of 4 with infinite 8 energy, creating mastery over material reality, physical healing, and systemic transformation. Less commonly recognized but deeply potent.',
+    keywords: ['Systemic healing','Physical mastery','Structural transformation','Endurance','Grounded power'],
+    shadow: 'Rigidity, over-responsibility for others\' healing, difficulty trusting the intangible.',
+    ritual: 'Invoke 44 for healing of the physical body, repair of broken systems, and grounding of spiritual work into lasting physical form.'
+  },
+
+  // ── ANGEL NUMBERS — 3 DIGIT ──
+  111: {
+    label: 'Angel Number',
+    title: 'Alignment Portal',
+    meaning: 'The manifestation gateway. Your thoughts are being amplified and projected into reality at an accelerated rate right now. 111 signals a moment of powerful creative alignment — what you focus on is rapidly becoming form. This is both a warning and an invitation. Your inner world is broadcasting outward.',
+    keywords: ['Manifestation','Alignment','New beginning','Thought power','Creative force','Gateway'],
+    shadow: 'Negative thought loops amplified just as readily as positive ones. Watch your internal narrative.',
+    ritual: 'When you see 111, pause and consciously redirect your thoughts toward what you want to create. State an intention out loud. The channel is open.'
+  },
+  222: {
+    label: 'Angel Number',
+    title: 'Trust the Process',
+    meaning: 'The number of divine timing, balance, and partnership. 222 asks you to trust that what you have planted is growing, even if you cannot yet see it above the soil. It is a message of reassurance — you are in the right place, doing the right things, at exactly the right time.',
+    keywords: ['Trust','Balance','Divine timing','Partnership','Patience','Faith','Harmony'],
+    shadow: 'Can appear when you are most impatient or doubting — the message is specifically for those moments.',
+    ritual: 'Breathe. Whatever you are waiting on has not been forgotten. Affirm: "I trust divine timing. What is mine is already moving toward me."'
+  },
+  333: {
+    label: 'Angel Number',
+    title: 'The Ascended Masters Are Near',
+    meaning: '333 signals the presence of ascended masters, guides, and elevated beings in your field. It is a confirmation that your spiritual support system is active and close. You are not working alone, and your prayers, intentions, and spiritual work are being heard and supported.',
+    keywords: ['Guidance','Spiritual support','Ascended masters','Divine presence','Creativity','Expression'],
+    shadow: 'May appear when you have been resistant to accepting help, spiritual or otherwise.',
+    ritual: 'Acknowledge your guides and ancestors. Speak your gratitude aloud. Ask for specific support. They are listening.'
+  },
+  444: {
+    label: 'Angel Number',
+    title: 'You Are Protected',
+    meaning: '444 is the signature of your angels and guides forming a protective perimeter around you. It is one of the most comforting angel numbers — a direct communication that you are held, supported, and watched over. The foundation beneath you is solid.',
+    keywords: ['Protection','Foundation','Angels','Stability','Security','Grounding','Divine support'],
+    shadow: 'Often appears in moments of fear or instability — the message is direct reassurance.',
+    ritual: 'Touch the earth or a grounding stone (black tourmaline, red jasper). Feel the support beneath you. Say: "I am held. I am protected. The ground beneath me is solid."'
+  },
+  555: {
+    label: 'Angel Number',
+    title: 'Change Is Coming',
+    meaning: '555 is one of the most powerful change signals in numerology. Major transformation is either already in motion or about to begin. This change is divinely orchestrated — not chaotic but purposeful. 555 is the universe clearing space for something that could not fit in your current configuration.',
+    keywords: ['Change','Transformation','Transition','Release','New era','Freedom','Evolution'],
+    shadow: 'The change 555 signals may feel disruptive or unwanted, even when it serves your highest good.',
+    ritual: 'Surrender to the change rather than resist. What are you holding onto that has already ended? Release it consciously. Say: "I release what is leaving. I welcome what is coming."'
+  },
+  666: {
+    label: 'Angel Number',
+    title: 'Realign with Spirit',
+    meaning: 'Despite its cultural baggage, 666 in numerology is a gentle call to return to balance — specifically to stop over-focusing on material concerns and reconnect with your spiritual foundation. It is a signal that your thoughts may have drifted too far into fear, lack, or material preoccupation.',
+    keywords: ['Rebalance','Spiritual refocus','Material concerns','Home','Family','Compassion','Recalibration'],
+    shadow: 'Not a dark omen — an invitation. The darkness is in the over-attachment to material reality it is pointing to.',
+    ritual: 'Step away from screens and material concerns for a moment. Meditate, go outside, touch a crystal. Return to your center. Ask: "What am I giving too much power to right now?"'
+  },
+  777: {
+    label: 'Angel Number',
+    title: 'Divine Confirmation',
+    meaning: '777 is one of the rarest and most auspicious angel numbers — a direct signal of divine alignment and spiritual confirmation. You are on exactly the right path. The choices you have been making are in alignment with your soul\'s purpose. 777 is the universe applauding.',
+    keywords: ['Divine alignment','Confirmation','Spiritual success','Intuition','Good fortune','Approval','Mastery'],
+    shadow: 'Complacency — 777 confirms the path but does not mean the work is done.',
+    ritual: 'Receive this. Let yourself feel confirmed and celebrated. Say: "I am exactly where I am supposed to be. I trust my path."'
+  },
+  888: {
+    label: 'Angel Number',
+    title: 'Abundance Is Flowing',
+    meaning: '888 is the signature of infinite abundance — material, spiritual, and energetic — flowing into your life. It signals that a cycle of abundance is opening, that the work you have done is producing fruit, and that you are in alignment with receiving. Financial shifts are often associated with 888.',
+    keywords: ['Abundance','Prosperity','Infinite flow','Financial shift','Receiving','Karma rewarded','Success'],
+    shadow: 'Resistance to receiving can block what 888 is signaling. Notice where you might be deflecting good things.',
+    ritual: 'Open your hands, literally or symbolically. Say: "I am open to receiving. I allow abundance to flow to me in all forms." Place citrine or pyrite on your abundance altar.'
+  },
+  999: {
+    label: 'Angel Number',
+    title: 'Chapter Closing',
+    meaning: '999 signals the end of a major cycle — the completion of something that has been long in progress. A chapter of your life is closing, and with it, you are releasing a version of yourself that can no longer accompany you forward. This ending is necessary and sacred, even if it feels like loss.',
+    keywords: ['Completion','Release','Endings','Transformation','Closure','Soul evolution','Letting go'],
+    shadow: 'Resistance to the ending prolongs the transition. What are you refusing to acknowledge is over?',
+    ritual: 'Write a closing ceremony. Name what is ending. Thank it. Release it consciously. Say: "This chapter is complete. I release it with love and gratitude."'
+  },
+
+  // ── ANGEL NUMBERS — 4 DIGIT ──
+  1010: {
+    label: 'Angel Number',
+    title: 'Spiritual Awakening in Progress',
+    meaning: '1010 is a powerful spiritual awakening signal. The 0s amplify the 1s — new beginnings energized by divine potential. You are awakening to a new level of consciousness and spiritual awareness. The path forward requires stepping into the unknown with trust.',
+    keywords: ['Awakening','Spiritual growth','New cycle','Divine potential','Trust','Leap of faith'],
+    shadow: 'Fear of the new, clinging to the known, resistance to the awakening being asked of you.',
+    ritual: 'Sit in meditation. Ask: "What am I awakening to?" Listen without judgment. The answer is already present.'
+  },
+  1111: {
+    label: 'Angel Number · The Great Portal',
+    title: 'The Manifestation Gateway',
+    meaning: '1111 is the most recognized and powerful angel number — the full manifestation portal. Where 111 opens a channel, 1111 BLOWS IT OPEN. Your thoughts, intentions, and energetic state at the moment of seeing 1111 are being written into the fabric of your reality with unusual speed and force. This is a moment of extraordinary creative power. Do not waste it on worry.',
+    keywords: ['Manifestation','Portal','Alignment','Soul purpose','Awakening','Divine timing','Creation'],
+    shadow: 'Unconscious manifestation — what you are focused on negatively is equally amplified. Master your thoughts.',
+    ritual: 'Stop everything. Make a wish, state an intention, or simply be conscious of what you want. Write it down if you can. 11:11 is a sacred timestamp. Given your Life Path 11, this number has personal resonance that goes even deeper — it mirrors your own frequency back to you.'
+  },
+  1212: {
+    label: 'Angel Number',
+    title: 'Step Into Your Power',
+    meaning: '1212 calls you to step out of your comfort zone and into the life you have been envisioning. The alternating 1s and 2s represent the dance between independence and partnership, self and other, vision and manifestation. Your guides are asking you to lead.',
+    keywords: ['Empowerment','Growth','Leadership','Balance','Vision','Courage','Step forward'],
+    shadow: 'Hesitation, waiting for permission, playing small when the invitation is to play big.',
+    ritual: 'Identify one way you have been holding back. Take one step forward in that direction today, however small.'
+  },
+  1234: {
+    label: 'Angel Number',
+    title: 'Step by Step',
+    meaning: '1234 is the number of sequential progress — a divine reminder that growth is meant to be incremental, not overnight. You are moving in the right direction. Trust the steps. Each one is preparing you for the next. Do not skip ahead.',
+    keywords: ['Progress','Sequential growth','Patience','Trust the process','Foundation','Steps','Forward motion'],
+    shadow: 'Impatience, wanting to jump ahead, discounting the value of the current step.',
+    ritual: 'Identify your next one step — not the whole staircase. Just one. Take it.'
+  },
+  2222: {
+    label: 'Angel Number',
+    title: 'Deep Alignment',
+    meaning: '2222 amplifies the trust and divine timing of 222 fourfold. Whatever you are waiting for is SO close. The universe is asking for your complete trust right now — not partial trust, not hopeful trust, but anchored, steady, unshakeable trust. The alignment is deeper than you can currently see.',
+    keywords: ['Deep trust','Divine timing','Partnership','Manifesting','Patience','Almost there','Faith'],
+    shadow: 'Doubt at the final hour, giving up right before the breakthrough, requiring visible proof.',
+    ritual: 'Write down: "I trust what I cannot yet see." Place it somewhere you will see it daily. The delivery is in process.'
+  },
+  3333: {
+    label: 'Angel Number',
+    title: 'Ascended Support Fully Active',
+    meaning: '3333 is the amplified presence of the ascended masters — not just nearby but fully engaged with your current situation. You are being directly assisted from the spiritual realm. Creative expression, teaching, and healing are being specifically supported right now.',
+    keywords: ['Divine assistance','Creative power','Spiritual community','Full support','Expression','Healing'],
+    shadow: 'Refusing the help available to you. Trying to do everything alone when you have assistance.',
+    ritual: 'Make a specific request of your guides and masters. Name what you need help with. The channel is wide open.'
+  },
+  4444: {
+    label: 'Angel Number',
+    title: 'Angelic Protection Activated',
+    meaning: '4444 is the most potent protection signal in angel number numerology. You are surrounded on all sides by spiritual protection — not just a single layer but four complete layers of angelic support. If you have been feeling unsafe, unsupported, or spiritually exposed, 4444 is a direct message: you are not.',
+    keywords: ['Maximum protection','Angelic presence','Safety','Grounding','Fortress','Complete security','Held'],
+    shadow: 'Difficulty trusting in protection you cannot physically see or verify.',
+    ritual: 'Visualize a golden light surrounding you in all four directions plus above and below. Say: "I am completely protected. I am held by forces greater than I can see." Touch your black tourmaline.'
+  },
+  5555: {
+    label: 'Angel Number',
+    title: 'Massive Transformation Incoming',
+    meaning: '5555 is one of the most dramatic change signals in numerology — transformation at a scale that reshapes not just one area of life but multiple simultaneously. This is not a gentle evolution; this is a complete renovation. The universe is making way for something entirely new by clearing out what was.',
+    keywords: ['Major transformation','Life overhaul','Multiple changes','New era','Freedom','Rebirth','Quantum leap'],
+    shadow: 'Panic, resistance, trying to hold onto what is being released. The tighter you hold, the more turbulent the change.',
+    ritual: 'Loosen your grip on what you are holding most tightly. The more willingly you release, the smoother the transition. Say: "I surrender to the transformation. I trust the new era."'
+  },
+  6666: {
+    label: 'Angel Number',
+    title: 'Return to Love',
+    meaning: '6666 is an urgent but gentle call to return your focus from fear, lack, or material anxiety back to love, compassion, and spiritual alignment. The quadrupled 6 amplifies the rebalancing message — you may have drifted significantly into material preoccupation or fear-based thinking.',
+    keywords: ['Return to love','Compassion','Rebalance','Spiritual alignment','Home','Heart center','Fear release'],
+    shadow: 'Sustained material anxiety or fear-based thinking that has become a pattern.',
+    ritual: 'Place your hands on your heart. Breathe into it deliberately. Ask: "What would love do here?" Make one choice from love rather than fear today.'
+  },
+  7777: {
+    label: 'Angel Number',
+    title: 'You Are a Miracle in Progress',
+    meaning: '7777 is the rarest and most profoundly auspicious angel number. Its appearance signals that you are in a state of complete divine alignment — spiritual, material, and energetic. You are being recognized by the universe itself as a being who is fulfilling their purpose. This is extraordinary confirmation.',
+    keywords: ['Supreme alignment','Divine recognition','Spiritual mastery','Luck','Purpose fulfilled','Rare blessing','Miracle'],
+    shadow: 'Grandiosity or spiritual bypassing — receiving this confirmation should inspire humility and gratitude, not ego.',
+    ritual: 'Receive this completely. Do not minimize it. Say: "I accept this confirmation. I am in alignment with my purpose. I am grateful." Write this moment down in your grimoire.'
+  },
+  8888: {
+    label: 'Angel Number',
+    title: 'Infinite Abundance Unlocked',
+    meaning: '8888 is the ultimate abundance number — infinite flow multiplied fourfold. Financial, material, spiritual, and energetic abundance are all simultaneously opening. A karmic cycle of giving has completed and the universe is returning what you have put out, amplified and multiplied.',
+    keywords: ['Infinite abundance','Karmic return','Financial breakthrough','Overflow','Legacy','Generational wealth','Receiving at scale'],
+    shadow: 'Scarcity mindset that blocks receiving. Unconscious beliefs about deserving or safety with abundance.',
+    ritual: 'Examine your deepest beliefs about abundance. What did you learn about money and receiving in childhood? 8888 is asking you to upgrade those beliefs to match what is now available to you.'
+  },
+  9999: {
+    label: 'Angel Number',
+    title: 'The Great Completion',
+    meaning: '9999 signals the end of a massive soul cycle — potentially one that spans multiple lifetimes, not just a single chapter. This is the completion of deep karmic patterns, ancient wounds, and soul-level agreements. What is ending with 9999 was never meant to be permanent. You have completed what you came here to do in this configuration.',
+    keywords: ['Soul cycle completion','Karmic completion','Ancient patterns ending','Soul evolution','Final release','New earth','Transcendence'],
+    shadow: 'Holding onto identity, roles, or relationships that have completed their soul purpose because the familiar feels safer than the unknown.',
+    ritual: 'Perform a formal closing ceremony. Name everything that is completing — not just what you are releasing but what you have learned, become, and healed. This is a graduation. Honor it accordingly.'
+  },
+  1144: {
+    label: 'Angel Number',
+    title: 'Masterful New Beginnings',
+    meaning: '1144 combines the portal energy of 11 with the master builder power of 44 — you are being called to begin building something of lasting significance. Your intuition (11) is being asked to partner with disciplined, grounded action (44). Vision without structure will not be enough here.',
+    keywords: ['Master building','Intuitive structure','Lasting creation','Discipline','New foundation','Purpose','Legacy'],
+    shadow: 'Getting stuck in vision without taking the practical steps to ground it.',
+    ritual: 'Identify one practical step toward your biggest vision. Take it this week. The 11 sees it; the 44 builds it.'
+  },
+  1155: {
+    label: 'Angel Number',
+    title: 'Liberated New Beginning',
+    meaning: '1155 signals the beginning of a new chapter defined by freedom, change, and expansion. What is starting now will feel significantly different from what came before — it will ask more of you in terms of adaptability and willingness to move without a complete map.',
+    keywords: ['Freedom','New chapter','Expansion','Change','Adaptability','Adventure','Breaking free'],
+    shadow: 'Resistance to the freedom being offered, preferring the known cage to the unknown open.',
+    ritual: 'Name one thing you have wanted to do but have been too afraid to begin. Start today. Even one small action.'
+  },
+  1221: {
+    label: 'Angel Number',
+    title: 'Mirror Alignment',
+    meaning: '1221 is a palindrome number — it reads the same forward and backward, which is itself the message. What you put out is being mirrored back to you with precision. Your external reality is reflecting your internal state almost perfectly right now. If you like what you see, amplify it. If you don\'t, shift your inner world first.',
+    keywords: ['Mirror principle','What you give returns','Inner reflection','Alignment check','Manifestation feedback','Internal external harmony'],
+    shadow: 'Blaming external circumstances without examining the internal state creating them.',
+    ritual: 'Look at your current external situation as information about your internal state. Where is the mirror showing you something to shift?'
+  },
+  1313: {
+    label: 'Angel Number',
+    title: 'Creative Ascended Support',
+    meaning: '1313 combines new beginning energy with the creative, ascending support of the ascended masters. Your creative endeavors and new beginnings are being directly supported from the spiritual realm. Whatever you are creating right now has divine assistance behind it.',
+    keywords: ['Supported creation','Ascended assistance','New creative beginning','Divine creativity','Expansion','Expression'],
+    shadow: 'Self-doubt about creative work, comparing your process to others\', blocking the divine support trying to come through.',
+    ritual: 'Create something today — even something small. The creative act itself is the ritual.'
+  },
+  1414: {
+    label: 'Angel Number',
+    title: 'Build the New Vision',
+    meaning: '1414 calls you to bring together visionary energy (1) and structural power (4) in equal measure. You have a vision. Now is the time to build its foundation with care and intention, brick by brick, rather than waiting for it to appear fully formed.',
+    keywords: ['Vision plus structure','Foundation building','Grounded creation','Patient effort','New stability','Manifestation through action'],
+    shadow: 'Expecting instant results, abandoning the building process before the foundation is set.',
+    ritual: 'Map out three concrete next steps for your biggest current intention. Execute the first one today.'
+  },
+  1515: {
+    label: 'Angel Number',
+    title: 'Transform What You Begin',
+    meaning: '1515 signals the beginning of something that will require significant personal transformation along the way. You are not just starting a new chapter — you are entering a process that will change who you are while it changes your circumstances.',
+    keywords: ['Transformative beginning','Change within change','Evolution','Growth catalyst','New and transforming','Alchemy'],
+    shadow: 'Wanting the outcome without the internal transformation it requires.',
+    ritual: 'Acknowledge that the goal you are moving toward will require you to become someone different to receive it. Begin becoming that person now.'
+  },
+  2121: {
+    label: 'Angel Number',
+    title: 'Intuitive Balance',
+    meaning: '2121 weaves partnership and new beginning energy in a spiral — intuitive balance, cooperative vision, and the trust to begin something new in genuine partnership with your higher self. The relationship between you and your spiritual guidance is asking to deepen.',
+    keywords: ['Intuitive partnership','Higher self connection','Trust','Cooperative vision','Spiritual relationship','Balance'],
+    shadow: 'Operating primarily from ego without checking in with intuition or higher guidance.',
+    ritual: 'Before a significant decision this week, sit in stillness and ask your higher self what it knows. Wait for the quiet answer.'
+  },
+
+  // ── SPECIAL SEQUENCES ──
+  100: {label:'Number',title:'Divine Source Energy',meaning:'100 carries the raw energy of 1 amplified by the infinite potential of 0 — the beginning that comes from absolute divine source. Rare and powerful.',keywords:['Divine origin','Source energy','Pure potential','Sacred beginning'],shadow:'Starting from ego rather than aligned source.',ritual:'Begin with a prayer, intention, or moment of alignment before any significant new beginning.'},
+  123: {label:'Sequence Number',title:'Moving Forward in Order',meaning:'123 is the staircase number — you are moving forward in perfect sequential order. Trust each step.',keywords:['Sequential progress','Natural order','Growth','Forward movement'],shadow:'Impatience, skipping necessary steps.',ritual:'Name your immediate next step. Just one. Take it.'},
+  144: {label:'Number',title:'Angelic Foundation',meaning:'144 (12×12) is deeply embedded in sacred geometry and angelic numerology. A number of divine order and structural perfection.',keywords:['Sacred geometry','Divine order','Angelic support','Foundation'],shadow:'Rigidity in structure.',ritual:'Arrange sacred objects in geometric patterns during ritual work.'},
+  369: {label:'Special Number',title:'Tesla\'s Key',meaning:'Nikola Tesla\'s famous 3-6-9 — said to be the key to the universe. These three numbers hold the pattern of creation, structure, and completion. Seeing 369 is a sign you are touching the fundamental patterns of reality.',keywords:['Universal pattern','Creative force','Divine mathematics','Tesla','Sacred pattern'],shadow:'Overthinking the pattern instead of living it.',ritual:'Meditate on the spiral — the nautilus, the galaxy, the DNA helix. You are part of the pattern.'},
+  411: {label:'Angel Number',title:'Spiritual Information Downloading',meaning:'411 (literally "information" in US culture) signals that important spiritual information or guidance is being made available to you right now. Pay close attention to synchronicities, dreams, and intuitive hits.',keywords:['Information','Guidance available','Pay attention','Downloads','Intuition','Synchronicity'],shadow:'Being too busy or distracted to receive the information being transmitted.',ritual:'Slow down. Listen. The guidance you have been seeking is trying to reach you.'},
+  911: {label:'Angel Number',title:'Emergency Spiritual Awakening',meaning:'911 is an urgent wake-up call from the universe. Something in your current path, belief system, or situation needs immediate attention. This is not a warning of danger — it is a call to consciousness.',keywords:['Wake up call','Urgent attention','Lightworker activation','Spiritual emergency','Course correction'],shadow:'Ignoring the signs that have been building.',ritual:'Ask honestly: what have I been avoiding looking at? Look at it today.'},
+};
+
+// ── DIGIT SUM REDUCTION ──
+function reduceNumber(n) {
+  while (n > 9 && n !== 11 && n !== 22 && n !== 33 && n !== 44) {
+    n = String(n).split('').reduce((s, d) => s + parseInt(d), 0);
+  }
+  return n;
+}
+
+function describeReduction(original, reduced) {
+  if (original === reduced) return '';
+  const steps = [];
+  let n = original;
+  while (n !== reduced) {
+    const digits = String(n).split('');
+    const sum = digits.reduce((s, d) => s + parseInt(d), 0);
+    steps.push(`${digits.join(' + ')} = ${sum}`);
+    n = sum;
+    if (n === reduced) break;
+  }
+  return `Numerologically reduces to ${reduced} (${steps.join(' → ')})`;
+}
+
+function lookupNumber() {
+  const raw = parseInt(document.getElementById('num-input').value);
+  if (!raw || raw < 1 || raw > 9999) {
+    alert('Please enter a number between 1 and 9999.');
+    return;
+  }
+
+  const result = document.getElementById('result');
+  const data = NUMBERS[raw];
+  const reduced = reduceNumber(raw);
+  const reducedData = NUMBERS[reduced];
+
+  if (data) {
+    // Direct match
+    populate(raw, data, '');
+    const redText = raw !== reduced ? describeReduction(raw, reduced) : '';
+    document.getElementById('res-reduction').textContent = redText;
+  } else if (reducedData) {
+    // Show reduced meaning with note
+    populate(raw, reducedData, '');
+    const redText = describeReduction(raw, reduced);
+    document.getElementById('res-reduction').textContent = redText + '. Showing meaning for core number ' + reduced + '.';
+  } else {
+    // Absolute fallback
+    populate(raw, {
+      label: 'Number',
+      title: 'Core Essence: ' + reduced,
+      meaning: `${raw} reduces to ${reduced} in numerology. While ${raw} itself isn't a catalogued sequence, its energy is rooted in the vibration of ${reduced}: ${reducedData ? reducedData.meaning : 'the fundamental energy of that digit.'}`,
+      keywords: reducedData ? reducedData.keywords : [],
+      shadow: reducedData ? reducedData.shadow : '',
+      ritual: reducedData ? reducedData.ritual : ''
+    }, '');
+    document.getElementById('res-reduction').textContent = describeReduction(raw, reduced);
+  }
+
+  result.classList.add('visible');
+  result.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+function populate(number, data, note) {
+  document.getElementById('res-number').textContent = number;
+  document.getElementById('res-label').textContent = data.label || '';
+  document.getElementById('res-title').textContent = data.title || '';
+  document.getElementById('res-meaning').textContent = data.meaning || '';
+
+  const kwWrap = document.getElementById('res-keywords-wrap');
+  const kwContainer = document.getElementById('res-keywords');
+  kwContainer.innerHTML = '';
+  if (data.keywords && data.keywords.length) {
+    kwWrap.style.display = 'block';
+    data.keywords.forEach(k => {
+      const span = document.createElement('span');
+      span.className = 'kw';
+      span.textContent = k;
+      kwContainer.appendChild(span);
+    });
+  } else {
+    kwWrap.style.display = 'none';
+  }
+
+  const shadowWrap = document.getElementById('res-shadow-wrap');
+  document.getElementById('res-shadow').textContent = data.shadow || '';
+  shadowWrap.style.display = data.shadow ? 'block' : 'none';
+
+  const ritualWrap = document.getElementById('res-ritual-wrap');
+  document.getElementById('res-ritual').textContent = data.ritual || '';
+  ritualWrap.style.display = data.ritual ? 'block' : 'none';
+}
+</script>
+</body>
+</html>
