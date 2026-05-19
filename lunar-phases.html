@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lunar Phases — In The Liminale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --void:#080610;--deep:#120e22;--plum:#1e1630;--violet:#2e2048;
+      --vlt:#4a3468;--lav:#9878c0;--mist:#d0c4e8;--ivory:#ede8dc;
+      --amber:#c88a28;--gold:#e0a830;--gold-lt:#f8cc60;
+      --moon-silver:#c8d4e8;--moon-glow:#e8f0ff;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--void);color:var(--mist);font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;line-height:1.7;min-height:100vh}
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
+
+    header{text-align:center;padding:4rem 2rem 2rem;position:relative;z-index:1}
+    header::after{content:'';display:block;width:220px;height:1px;background:linear-gradient(to right,transparent,var(--amber),transparent);margin:1.5rem auto 0}
+    .eyebrow{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.55em;text-transform:uppercase;color:var(--amber);margin-bottom:.8rem;opacity:.8}
+    h1{font-family:'Cinzel',serif;font-size:clamp(2rem,5vw,3rem);font-weight:400;color:var(--ivory);letter-spacing:.07em}
+    h1 em{display:block;font-family:'IM Fell English',serif;font-style:italic;font-size:.38em;color:var(--lav);margin-top:.4rem;letter-spacing:.06em;opacity:.85}
+
+    main{max-width:960px;margin:0 auto;padding:2rem 2rem 6rem;position:relative;z-index:1}
+    .section-label{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.48em;text-transform:uppercase;color:var(--amber);opacity:.8;margin-bottom:.4rem}
+    .rule{width:100%;height:1px;background:linear-gradient(to right,var(--vlt),transparent);margin:.4rem 0 2rem}
+
+    /* ── LIVE MOON DISPLAY ── */
+    .moon-hero{background:var(--deep);border:1px solid #2e204855;border-radius:16px;padding:2.5rem;margin-bottom:2rem;display:grid;grid-template-columns:auto 1fr;gap:2.5rem;align-items:center;position:relative;overflow:hidden}
+    .moon-hero::before{content:'';position:absolute;top:-80px;right:-80px;width:260px;height:260px;background:radial-gradient(circle,#d0d8f815 0%,transparent 70%);pointer-events:none}
+
+    /* MOON SVG */
+    .moon-svg-wrap{width:140px;height:140px;flex-shrink:0;position:relative}
+    .moon-svg-wrap svg{width:100%;height:100%}
+
+    .moon-info{}
+    .moon-phase-name{font-family:'Cinzel',serif;font-size:clamp(1.4rem,3vw,2rem);font-weight:400;color:var(--ivory);letter-spacing:.05em;margin-bottom:.3rem}
+    .moon-date{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);opacity:.75;margin-bottom:.8rem}
+    .moon-illumination{font-size:.95rem;color:var(--lav);margin-bottom:.5rem}
+    .moon-sign{font-style:italic;font-size:1rem;color:var(--mist);opacity:.85;margin-bottom:1rem}
+
+    .moon-next-row{display:flex;gap:1.2rem;flex-wrap:wrap}
+    .next-chip{background:var(--plum);border:1px solid #2e204855;border-radius:6px;padding:.5rem 1rem}
+    .next-chip-label{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);display:block;opacity:.7;margin-bottom:.15rem}
+    .next-chip-val{font-size:.88rem;color:var(--ivory)}
+
+    /* PHASE BAR */
+    .phase-bar-wrap{margin-bottom:2rem}
+    .phase-bar{display:flex;border-radius:8px;overflow:hidden;height:12px;background:var(--plum);margin-bottom:.6rem}
+    .phase-segment{height:100%;transition:flex .5s ease;cursor:pointer;position:relative}
+    .phase-segment:hover{filter:brightness(1.3)}
+    .phase-labels{display:flex;justify-content:space-between}
+    .phase-label-item{font-family:'Cinzel',serif;font-size:.48rem;letter-spacing:.08em;text-transform:uppercase;color:var(--lav);opacity:.55;text-align:center;flex:1}
+    .phase-label-item.current{color:var(--gold-lt);opacity:1}
+
+    /* CURRENT PHASE GUIDANCE */
+    .guidance-card{background:var(--deep);border:1px solid #2e204855;border-radius:12px;padding:2rem;margin-bottom:2rem}
+    .guidance-title{font-family:'Cinzel',serif;font-size:1rem;color:var(--ivory);letter-spacing:.05em;margin-bottom:.5rem}
+    .guidance-energy{font-style:italic;font-size:1.1rem;color:var(--gold-lt);margin-bottom:1rem;line-height:1.5}
+    .guidance-body{font-size:.95rem;color:var(--mist);line-height:1.75;margin-bottom:1rem}
+    .guidance-list{list-style:none;padding:0}
+    .guidance-list li{padding:.3rem 0;padding-left:1.2rem;position:relative;font-size:.92rem;color:var(--mist);line-height:1.6}
+    .guidance-list li::before{content:'✦';position:absolute;left:0;color:var(--amber);font-size:.65rem;top:.45rem;opacity:.7}
+
+    .guidance-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.2rem}
+    .guidance-sub{background:var(--plum);border-radius:8px;padding:1.1rem 1.3rem}
+    .guidance-sub-title{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);opacity:.75;margin-bottom:.4rem}
+    .guidance-sub-body{font-size:.88rem;color:var(--mist);line-height:1.6}
+
+    /* NEW MOON BIRTH */
+    .birth-card{background:var(--deep);border:1px solid #c88a2833;border-radius:12px;padding:2rem;margin-bottom:2rem;position:relative;overflow:hidden}
+    .birth-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,#c88a2808,transparent);pointer-events:none}
+    .birth-card-title{font-family:'Cinzel',serif;font-size:1rem;color:var(--ivory);letter-spacing:.05em;margin-bottom:.3rem}
+    .birth-card-sub{font-family:'IM Fell English',serif;font-style:italic;font-size:1.2rem;color:var(--gold-lt);margin-bottom:1rem}
+    .birth-body{font-size:.95rem;color:var(--mist);line-height:1.75}
+    .birth-highlight{font-style:italic;color:var(--lav);border-left:2px solid var(--vlt);padding-left:.9rem;margin:1rem 0;line-height:1.7;font-size:.92rem}
+
+    /* PHASE WHEEL */
+    .wheel-section{margin-bottom:2rem}
+    .phase-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.9rem}
+    .phase-card{background:var(--deep);border:1px solid #2e204844;border-radius:10px;padding:1.2rem;transition:transform .3s,box-shadow .3s,border-color .3s;cursor:default}
+    .phase-card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(8,6,16,.6);border-color:#4a346855}
+    .phase-card.current-phase{border-color:var(--amber);background:linear-gradient(135deg,#160e28,#1e1630)}
+    .pc-moon{font-size:1.6rem;margin-bottom:.4rem;line-height:1}
+    .pc-name{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ivory);margin-bottom:.25rem}
+    .pc-current-tag{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--amber);opacity:.8}
+    .pc-energy{font-size:.82rem;color:var(--lav);font-style:italic;line-height:1.5;margin-top:.3rem}
+    .pc-keywords{font-size:.78rem;color:var(--mist);opacity:.65;margin-top:.4rem}
+
+    /* MOON IN SIGN */
+    .sign-card{background:var(--deep);border:1px solid #2e204844;border-radius:12px;padding:1.8rem;margin-bottom:2rem}
+    .sign-title{font-family:'Cinzel',serif;font-size:.95rem;color:var(--ivory);letter-spacing:.05em;margin-bottom:.4rem}
+    .sign-body{font-size:.93rem;color:var(--mist);line-height:1.75}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:600px){
+      .moon-hero{grid-template-columns:1fr;text-align:center}
+      .moon-svg-wrap{margin:0 auto}
+      .moon-next-row{justify-content:center}
+      .guidance-grid{grid-template-columns:1fr}
+      .phase-cards{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">☽ &nbsp;✦&nbsp; ♄</p>
+  <h1>Lunar Phases<em>Cycles · In The Liminale</em></h1>
+</header>
+
+<main>
+
+  <!-- LIVE MOON -->
+  <p class="section-label">Right Now</p>
+  <div class="rule"></div>
+
+  <div class="moon-hero">
+    <div class="moon-svg-wrap">
+      <svg id="moon-svg" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#e8f0ff" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#e8f0ff" stop-opacity="0"/>
+          </radialGradient>
+          <clipPath id="moonClip">
+            <circle cx="70" cy="70" r="54"/>
+          </clipPath>
+        </defs>
+        <!-- Glow -->
+        <circle cx="70" cy="70" r="68" fill="url(#moonGlow)"/>
+        <!-- Dark circle base -->
+        <circle cx="70" cy="70" r="54" fill="#0e1428"/>
+        <!-- Lit portion - drawn by JS -->
+        <g id="moon-lit" clip-path="url(#moonClip)"></g>
+        <!-- Rim -->
+        <circle cx="70" cy="70" r="54" fill="none" stroke="#c8d4e8" stroke-width="1" opacity="0.4"/>
+        <!-- Craters (subtle) -->
+        <circle cx="55" cy="60" r="5" fill="none" stroke="#c8d4e833" stroke-width="0.8"/>
+        <circle cx="82" cy="78" r="3.5" fill="none" stroke="#c8d4e822" stroke-width="0.6"/>
+        <circle cx="65" cy="85" r="4" fill="none" stroke="#c8d4e822" stroke-width="0.6"/>
+      </svg>
+    </div>
+    <div class="moon-info">
+      <div class="moon-phase-name" id="phase-name">Loading...</div>
+      <div class="moon-date" id="moon-date-display"></div>
+      <div class="moon-illumination" id="moon-illum"></div>
+      <div class="moon-sign" id="moon-sign-display"></div>
+      <div class="moon-next-row">
+        <div class="next-chip">
+          <span class="next-chip-label">Next New Moon</span>
+          <span class="next-chip-val" id="next-new"></span>
+        </div>
+        <div class="next-chip">
+          <span class="next-chip-label">Next Full Moon</span>
+          <span class="next-chip-val" id="next-full"></span>
+        </div>
+        <div class="next-chip">
+          <span class="next-chip-label">Days in Phase</span>
+          <span class="next-chip-val" id="days-in-phase"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE PROGRESS BAR -->
+  <div class="phase-bar-wrap">
+    <div class="phase-bar" id="phase-bar"></div>
+    <div class="phase-labels" id="phase-labels"></div>
+  </div>
+
+  <!-- CURRENT GUIDANCE -->
+  <p class="section-label">Current Phase Energy</p>
+  <div class="rule"></div>
+  <div class="guidance-card" id="guidance-card"></div>
+
+  <!-- YOUR MOON IN TRANSIT -->
+  <div class="sign-card" id="transit-sign-card"></div>
+
+  <!-- NEW MOON BIRTH SECTION -->
+  <p class="section-label">Your Lunar Signature</p>
+  <div class="rule"></div>
+
+  <div class="birth-card">
+    <div class="birth-card-title">Born on a New Moon</div>
+    <div class="birth-card-sub">February 6, 1992 · Moon in Pisces · 2nd House</div>
+    <div class="birth-body">
+      <p>You were born under a New Moon — the darkest night of the lunar cycle, the moment of inception before any light is visible. This is not a subtle placement. Being born on a New Moon means your entire life operates on New Moon energy: you are an initiator, a beginner of cycles, someone who is always in some way starting.</p>
+      <div class="birth-highlight">New Moon people are seeds, not flowers. They are beginnings looking for their becoming. The world often doesn't see them clearly because they are still emerging — but they are always moving toward something, even when they cannot yet name it.</div>
+      <p>Your New Moon lands in Pisces in the 2nd house, which adds layers of significance. The 2nd house governs what you value, what you call your own, and your sense of security and self-worth. A Pisces New Moon here means your instinct for self-worth is deeply intuitive, fluid, and spiritually oriented — you know your value through feeling rather than evidence, through resonance rather than proof.</p>
+      <div class="birth-highlight">Every New Moon in Pisces is personal for you. It returns to the degree of your birth each year and activates your natal lunar signature. These are your most potent months for new beginnings, intention-setting, and initiating anything that matters.</div>
+      <p style="margin-top:.8rem">Your Moon in Pisces is The High Priestess — she does not show you everything at once. She reveals by degree, through feeling, through the liminal space between waking and sleep. She is most powerful at thresholds: the moment before dawn, the space between one cycle and the next, the dark moon before the new.</p>
+    </div>
+  </div>
+
+  <!-- NEW MOON IN PISCES ANNUAL NOTE -->
+  <div class="guidance-card" style="border-color:#4a346855">
+    <div class="guidance-title">Annual Power Window — New Moon in Pisces</div>
+    <div class="guidance-energy">Your most potent new beginning window each year</div>
+    <div class="guidance-body">Every year when the New Moon returns to Pisces (typically late February or early March), it activates your natal Moon placement and amplifies your initiator energy tenfold. This is your personal lunar new year — more significant for you than January 1st or even the standard astrological new year at Aries.</div>
+    <div class="guidance-grid">
+      <div class="guidance-sub">
+        <div class="guidance-sub-title">What to do</div>
+        <div class="guidance-sub-body">Set your most significant intentions for the year. Begin creative projects. Initiate spiritual practices. Make decisions you have been preparing for. This window is yours.</div>
+      </div>
+      <div class="guidance-sub">
+        <div class="guidance-sub-title">How to honor it</div>
+        <div class="guidance-sub-body">Florida water, ocean water, rainbow moonstone, amethyst. Pre-dawn ritual. Written intentions in water (dissolving paper). Dream journaling in the days before and after.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULL PHASE WHEEL -->
+  <p class="section-label">The Lunar Cycle</p>
+  <div class="rule"></div>
+  <div class="phase-cards" id="all-phases"></div>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════
+// MOON CALCULATION ENGINE
+// ═══════════════════════════════════════
+
+// Known new moon reference: Jan 6, 2000 18:14 UTC
+const KNOWN_NEW_MOON = new Date(Date.UTC(2000, 0, 6, 18, 14, 0));
+const LUNAR_CYCLE = 29.530588853; // days
+
+function getMoonAge(date) {
+  const diff = (date - KNOWN_NEW_MOON) / (1000 * 60 * 60 * 24);
+  return ((diff % LUNAR_CYCLE) + LUNAR_CYCLE) % LUNAR_CYCLE;
+}
+
+function getMoonIllumination(age) {
+  const angle = (age / LUNAR_CYCLE) * 2 * Math.PI;
+  return (1 - Math.cos(angle)) / 2;
+}
+
+function getPhaseData(age) {
+  const pct = age / LUNAR_CYCLE;
+  if (pct < 0.02 || pct >= 0.98) return { name: 'New Moon', emoji: '🌑', idx: 0 };
+  if (pct < 0.25) return { name: 'Waxing Crescent', emoji: '🌒', idx: 1 };
+  if (pct < 0.27) return { name: 'First Quarter', emoji: '🌓', idx: 2 };
+  if (pct < 0.48) return { name: 'Waxing Gibbous', emoji: '🌔', idx: 3 };
+  if (pct < 0.52) return { name: 'Full Moon', emoji: '🌕', idx: 4 };
+  if (pct < 0.73) return { name: 'Waning Gibbous', emoji: '🌖', idx: 5 };
+  if (pct < 0.77) return { name: 'Last Quarter', emoji: '🌗', idx: 6 };
+  return { name: 'Waning Crescent', emoji: '🌘', idx: 7 };
+}
+
+function getNextPhaseDate(date, targetAgeFraction) {
+  const age = getMoonAge(date);
+  const targetAge = targetAgeFraction * LUNAR_CYCLE;
+  let daysUntil = targetAge - age;
+  if (daysUntil < 0) daysUntil += LUNAR_CYCLE;
+  return new Date(date.getTime() + daysUntil * 24 * 60 * 60 * 1000);
+}
+
+function getMoonSign(date) {
+  // Moon moves ~13.2 degrees/day, changes sign every ~2.3 days
+  // Reference: Moon in Aries on Jan 1 2000 ≈ 117 days from KNOWN_NEW_MOON
+  const signs = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+  const daysSinceRef = (date - new Date(Date.UTC(2000,0,1))) / (1000*60*60*24);
+  const moonLon = (daysSinceRef * 13.176396) % 360;
+  const signIdx = Math.floor(((moonLon + 360) % 360) / 30);
+  return signs[signIdx];
+}
+
+function formatDate(date) {
+  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function formatDateShort(date) {
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// ═══ DRAW MOON SVG ═══
+function drawMoon(age) {
+  const litGroup = document.getElementById('moon-lit');
+  litGroup.innerHTML = '';
+  const pct = age / LUNAR_CYCLE;
+  const illum = getMoonIllumination(age);
+  const r = 54;
+
+  if (illum < 0.02) {
+    // Pure dark — new moon
+    return;
+  }
+  if (illum > 0.98) {
+    // Pure full
+    const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circle.setAttribute('cx','70');circle.setAttribute('cy','70');circle.setAttribute('r','54');
+    circle.setAttribute('fill','#c8d4e8');
+    litGroup.appendChild(circle);
+    return;
+  }
+
+  // Calculate the ellipse x-radius for the terminator
+  // illum = (1 - cos(angle))/2, so cos(angle) = 1 - 2*illum
+  const cosAngle = 1 - 2 * illum;
+  const ex = Math.abs(cosAngle) * r; // x-radius of the ellipse (terminator)
+  const isWaxing = pct < 0.5;
+
+  // Lit half: always the right half for waxing, left for waning
+  // We draw: lit semicircle + ellipse for the terminator shape
+  if (isWaxing) {
+    // Right half lit, terminator curves left
+    const d = `M 70 ${70-r} A ${r} ${r} 0 0 1 70 ${70+r} A ${ex} ${r} 0 0 ${cosAngle >= 0 ? 0 : 1} 70 ${70-r} Z`;
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', d);
+    path.setAttribute('fill','#c8d4e8');
+    litGroup.appendChild(path);
+  } else {
+    // Left half lit, terminator curves right
+    const d = `M 70 ${70-r} A ${r} ${r} 0 0 0 70 ${70+r} A ${ex} ${r} 0 0 ${cosAngle >= 0 ? 1 : 0} 70 ${70-r} Z`;
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', d);
+    path.setAttribute('fill','#c8d4e8');
+    litGroup.appendChild(path);
+  }
+}
+
+// ═══ PHASE GUIDANCE DATA ═══
+const PHASE_GUIDANCE = {
+  0: { // New Moon
+    energy: 'The void before the seed. Silence. Potential without form.',
+    body: 'The New Moon is the darkest night — the moment between one cycle ending and another beginning. This is a sacred pause. The energy here is not empty; it is pregnant with everything that has not yet declared itself. New Moon energy is best used for intention-setting, seeding new beginnings, and entering a state of receptive stillness.',
+    do: ['Set your most significant intentions for this lunar cycle','Begin new projects, relationships, or practices','Journal what you want to call in','Rest and restore — this is not a time of output','Cleanse your space and altar to receive the new'],
+    avoid: ['Forcing outcomes or rushing decisions','Looking for external validation','Comparing where you are to where you want to be'],
+    ritual: 'Write your intentions on paper. Place them under a moonstone or clear quartz. Light a black or white candle. Florida water on your wrists and third eye.',
+    affirmation: '"I am a new beginning. What I plant tonight grows toward light."',
+    yourChart: 'As someone born on a New Moon, this phase is your energetic home base. You feel more yourself during New Moons than at any other point in the cycle. Your Pisces Moon makes this particularly potent for dream work, spiritual intention, and anything connected to the unseen realm.'
+  },
+  1: { // Waxing Crescent
+    energy: 'The first breath. The intention takes its first step toward form.',
+    body: 'The Waxing Crescent is the first visible sliver of light after the New Moon — the universe confirming that what you seeded is beginning to move. This is a time of early momentum, of tending your intentions with focused action. The energy is hopeful, forward-facing, and quietly building.',
+    do: ['Take the first concrete steps toward your New Moon intentions','Gather resources and information','Make small, deliberate moves forward','State your intentions aloud daily','Begin building the structures your goals need'],
+    avoid: ['Giving up because results aren\'t visible yet','Taking on too much at once','Second-guessing your New Moon intentions'],
+    ritual: 'Light a candle in the direction of your intention. Speak your goals aloud as if they are already in motion. Carry carnelian for activation energy.',
+    affirmation: '"The first light has appeared. My intention is alive and growing."',
+    yourChart: 'Your Capricorn Rising and Saturn in 1st house give you natural patience with slow beginnings. Trust the waxing process — you are built for the long build.'
+  },
+  2: { // First Quarter
+    energy: 'Decision point. Action required. The seeds meet resistance.',
+    body: 'The First Quarter Moon creates a square between the Sun and Moon — tension, friction, challenge. This is not a comfortable phase, and it is not meant to be. The First Quarter asks you to push through the first real obstacle. If you committed to something at the New Moon, the First Quarter will test that commitment.',
+    do: ['Make the decisions you have been avoiding','Take decisive action toward your intentions','Problem-solve rather than retreat','Double down on your commitment','Break through the first layer of resistance'],
+    avoid: ['Abandoning your intentions at the first difficulty','Waiting for the perfect moment','Letting friction become reason to stop'],
+    ritual: 'Write down the obstacle. Write three ways to move through it. Choose one and act today.',
+    affirmation: '"I meet resistance with commitment. The obstacle is the path."',
+    yourChart: 'Mars in your 12th house can make decisive action feel difficult — it operates internally before externally. The First Quarter asks your hidden Mars to surface.'
+  },
+  3: { // Waxing Gibbous
+    energy: 'Refinement. Almost there. Edit, adjust, perfect.',
+    body: 'The Waxing Gibbous is the phase of almost — almost full, almost complete, almost there. This is a time of refinement, adjustment, and fine-tuning. Look at what you\'ve built so far and ask what needs editing. The energy supports detailed work, improvement, and getting things right before the culmination.',
+    do: ['Refine and adjust your approach','Do the detailed, patient work','Seek feedback and integrate it','Fine-tune your intentions and plans','Prepare for the full release of the Full Moon'],
+    avoid: ['Rushing toward the finish','Ignoring details that need attention','Assuming what\'s built is already complete'],
+    ritual: 'Review your New Moon intentions. What needs adjustment? What is working? Write a refined version. Hold labradorite for clarity.',
+    affirmation: '"I refine my vision with patience and precision. Perfection emerges from care."',
+    yourChart: 'Your Virgo Jupiter (Rx) — even in reversal — lends refinement energy that harmonizes with this phase. The inward turning of Waxing Gibbous suits your reflective nature.'
+  },
+  4: { // Full Moon
+    energy: 'Culmination. Illumination. What was hidden is now revealed.',
+    body: 'The Full Moon is the peak of the lunar cycle — maximum illumination, maximum emotional intensity, maximum visibility. What you seeded at the New Moon is now fully visible. This is a time of celebration, gratitude, revelation, and release of anything that has shown itself to be out of alignment with your intentions.',
+    do: ['Celebrate what has come to fruition','Release what the Full Moon has illuminated as no longer aligned','Charge your crystals and ritual tools under the moonlight','Perform gratitude and acknowledgment rituals','Allow emotions to surface and be felt'],
+    avoid: ['Making major decisions in the heat of Full Moon emotion','Bottling up what needs to be expressed','Charging water-sensitive crystals (check your compendium)'],
+    ritual: 'Place your crystals outside or on a windowsill. Write a gratitude list. Write a release list. Burn the release list safely. Florida water bath if possible.',
+    affirmation: '"I am full. I am seen. I release what no longer serves the next cycle."',
+    yourChart: 'As a New Moon birth, the Full Moon is your point of maximum external energy — and sometimes maximum overwhelm. Your Pisces Moon absorbs everything at Full Moon. Protect your energy with black tourmaline and deliberate boundary-setting.'
+  },
+  5: { // Waning Gibbous
+    energy: 'Integration. Gratitude. Sharing the harvest.',
+    body: 'The Waning Gibbous is the grateful exhale after the Full Moon peak. Also called the Disseminating Moon, this phase is about sharing what you\'ve learned, integrating the revelations of the Full Moon, and expressing gratitude for what the cycle has produced. The energy is generous, communicative, and reflective.',
+    do: ['Share your insights and gifts with others','Integrate the revelations of the Full Moon','Express gratitude in concrete ways','Begin releasing gently what isn\'t needed','Teach, write, communicate what you\'ve learned'],
+    avoid: ['Rushing to the next cycle before integrating this one','Hoarding your insights rather than sharing them'],
+    ritual: 'Write or speak about what you learned this cycle. Who needs to hear what you\'ve discovered? Share something of value.',
+    affirmation: '"I integrate. I share. The wisdom of this cycle belongs to the world."',
+    yourChart: 'Your Mercury in Aquarius (The Magician) thrives in this sharing phase — your insights want to be transmitted, not kept private.'
+  },
+  6: { // Last Quarter
+    energy: 'Release. Let go. What served the cycle is complete.',
+    body: 'The Last Quarter creates another Sun-Moon square — this time in the releasing direction. What the First Quarter tested to build, the Last Quarter asks you to release. This is a time of conscious letting go, of clearing the old to make genuine space for the next New Moon\'s beginnings. Personal Year 9 energy aligns strongly with this phase.',
+    do: ['Release consciously what has completed its purpose','Forgive what needs forgiving','Clear your space physically and energetically','Complete unfinished business','Prepare yourself for a genuine new beginning'],
+    avoid: ['Clinging to what has clearly run its course','Starting major new projects (wait for the New Moon)','Forcing closure before you are ready'],
+    ritual: 'Banishing work. Smoke cleansing. Write what you are releasing and burn it. Salt bath. Set a clear intention of what you will not carry into the next cycle.',
+    affirmation: '"I release with grace. I clear the ground. The new cycle will find me ready."',
+    yourChart: 'Your Personal Year 9 is in deep resonance with Last Quarter energy all year. This phase is particularly charged for you in 2026.'
+  },
+  7: { // Waning Crescent
+    energy: 'Surrender. Rest. The sacred dark before the new beginning.',
+    body: 'The Waning Crescent — also called the Balsamic Moon — is the final phase before the New Moon. This is the most liminal, mysterious, and inward of all phases. The energy calls for deep rest, surrender, dream work, and spiritual receptivity. You are between cycles — fully released from the last and not yet in the next.',
+    do: ['Rest without guilt','Dream and receive through sleep','Meditate and practice silence','Complete final releases','Trust the in-between space'],
+    avoid: ['Forcing action','Starting new things before the New Moon','Judging yourself for low energy'],
+    ritual: 'Pre-dawn meditation. Dream journaling. Amethyst and labradorite under your pillow. Complete silence for at least one morning. Prepare your New Moon altar.',
+    affirmation: '"I rest in the sacred dark. I am between, and the between is holy."',
+    yourChart: 'Your 12th house stellium (Venus, Mars, Uranus, Neptune) and North Node make you naturally attuned to Balsamic energy. The liminal is your home. This phase activates your most hidden and powerful gifts.'
+  }
+};
+
+const ALL_PHASES = [
+  { name: 'New Moon', emoji: '🌑', energy: 'Seed · Intention · Beginning', keywords: 'Dark, potent, silent, electric' },
+  { name: 'Waxing Crescent', emoji: '🌒', energy: 'First light · Early momentum · Hope', keywords: 'Tender, building, forward-facing' },
+  { name: 'First Quarter', emoji: '🌓', energy: 'Decision · Action · Resistance met', keywords: 'Tense, decisive, breakthrough' },
+  { name: 'Waxing Gibbous', emoji: '🌔', energy: 'Refinement · Almost · Fine-tuning', keywords: 'Detailed, patient, almost-there' },
+  { name: 'Full Moon', emoji: '🌕', energy: 'Culmination · Illumination · Release', keywords: 'Peak, visible, electric, emotional' },
+  { name: 'Waning Gibbous', emoji: '🌖', energy: 'Integration · Gratitude · Sharing', keywords: 'Generous, reflective, communicative' },
+  { name: 'Last Quarter', emoji: '🌗', energy: 'Release · Forgiveness · Clearing', keywords: 'Deliberate, releasing, clearing' },
+  { name: 'Waning Crescent', emoji: '🌘', energy: 'Surrender · Rest · Sacred dark', keywords: 'Liminal, restful, receptive, balsamic' }
+];
+
+const MOON_SIGNS = {
+  Aries:      { energy: 'Bold, initiating, impulsive. High emotional charge. Strong will energy.', ritual: 'Action-oriented rituals. Begin new workings. Candle magic. Physical movement.' },
+  Taurus:     { energy: 'Grounding, sensual, slow. Beauty and pleasure activated. Stubborn but stable.', ritual: 'Body-based ritual. Abundance work. Crystal work. Bathing rituals. Earth connection.' },
+  Gemini:     { energy: 'Quick, communicative, dual. Ideas flow. Mental restlessness.', ritual: 'Writing, journaling, sigil work. Communication spells. Mercury workings.' },
+  Cancer:     { energy: 'Emotional peak. Heightened intuition. Home and family activated.', ritual: 'Ancestral work. Home blessing. Emotion-release rituals. Water magic.' },
+  Leo:        { energy: 'Creative fire. Confidence amplified. Drama and heart energy high.', ritual: 'Visibility workings. Creative rituals. Heart chakra work. Joy and play practices.' },
+  Virgo:      { energy: 'Precision and service. Healing and purification energy. Analytical and discerning.', ritual: 'Cleansing rituals. Health workings. Organization and clarity practices. Herbal magic.' },
+  Libra:      { energy: 'Balance and beauty. Relationship energy high. Justice and harmony.', ritual: 'Relationship workings. Beauty rituals. Balance and justice magic. Cord work.' },
+  Scorpio:    { energy: 'Depth and transformation. Psychic energy peaks. Shadow surfaces.', ritual: 'Shadow work. Banishing and binding. Ancestral communication. Deep healing.' },
+  Sagittarius:{ energy: 'Expansion and freedom. Optimism and vision. Philosophy and travel.', ritual: 'Vision workings. Expansion rituals. Freedom and liberation magic. Fire ceremonies.' },
+  Capricorn:  { energy: 'Discipline and structure. Long-term goals activated. Authority energy.', ritual: 'Career and ambition workings. Saturn rituals. Structure and discipline practices.' },
+  Aquarius:   { energy: 'Innovation and community. Detachment with purpose. Humanitarian energy.', ritual: 'Group workings. Future-vision practices. Liberation magic. Innovation rituals.' },
+  Pisces:     { energy: 'Deep intuition and dissolution. Psychic permeability at maximum. Dreamtime.', ritual: 'Dream work. Psychic development. Water magic. Compassion and surrender practices.' }
+};
+
+// ═══ RENDER ═══
+function render() {
+  const now = new Date();
+  const age = getMoonAge(now);
+  const illum = getMoonIllumination(age);
+  const phase = getPhaseData(age);
+  const sign = getMoonSign(now);
+
+  // Draw moon
+  drawMoon(age);
+
+  // Phase name + date
+  document.getElementById('phase-name').textContent = phase.name;
+  document.getElementById('moon-date-display').textContent = formatDate(now);
+  document.getElementById('moon-illum').textContent = `${Math.round(illum * 100)}% illuminated`;
+  document.getElementById('moon-sign-display').textContent = `Moon in ${sign}`;
+
+  // Next phases
+  const nextNew = getNextPhaseDate(now, 0);
+  const nextFull = getNextPhaseDate(now, 0.5);
+  document.getElementById('next-new').textContent = formatDateShort(nextNew);
+  document.getElementById('next-full').textContent = formatDateShort(nextFull);
+
+  // Days in phase (approx)
+  const phaseLength = LUNAR_CYCLE / 8;
+  const daysIn = Math.round((age % phaseLength));
+  document.getElementById('days-in-phase').textContent = `Day ${daysIn + 1} of ~${Math.round(phaseLength)}`;
+
+  // Phase bar
+  const phaseBar = document.getElementById('phase-bar');
+  const phaseLabels = document.getElementById('phase-labels');
+  const colors = ['#304060','#3a5080','#4a6898','#6080b0','#c8d4e8','#8090b0','#4a6090','#304060'];
+  const phaseNames = ['New','↗ Crescent','First ¼','↗ Gibbous','Full','↘ Gibbous','Last ¼','↘ Crescent'];
+  phaseBar.innerHTML = '';
+  phaseLabels.innerHTML = '';
+  colors.forEach((c, i) => {
+    const seg = document.createElement('div');
+    seg.className = 'phase-segment';
+    seg.style.flex = i === phase.idx ? '2' : '1';
+    seg.style.background = i === phase.idx ? '#c8d4e8' : c;
+    phaseBar.appendChild(seg);
+    const lbl = document.createElement('div');
+    lbl.className = 'phase-label-item' + (i === phase.idx ? ' current' : '');
+    lbl.textContent = phaseNames[i];
+    phaseLabels.appendChild(lbl);
+  });
+
+  // Guidance
+  const g = PHASE_GUIDANCE[phase.idx];
+  const guidanceCard = document.getElementById('guidance-card');
+  guidanceCard.innerHTML = `
+    <div class="guidance-title">${phase.emoji} ${phase.name} — Current Phase</div>
+    <div class="guidance-energy">${g.energy}</div>
+    <div class="guidance-body">${g.body}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+      <div>
+        <p class="guidance-sub-title" style="font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);opacity:.75;margin-bottom:.4rem">Work with this phase</p>
+        <ul class="guidance-list">${g.do.map(d => `<li>${d}</li>`).join('')}</ul>
+      </div>
+      <div>
+        <p class="guidance-sub-title" style="font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);opacity:.75;margin-bottom:.4rem">Move gently past</p>
+        <ul class="guidance-list">${g.avoid.map(a => `<li>${a}</li>`).join('')}</ul>
+      </div>
+    </div>
+    <div class="guidance-grid">
+      <div class="guidance-sub">
+        <div class="guidance-sub-title">Ritual suggestion</div>
+        <div class="guidance-sub-body">${g.ritual}</div>
+      </div>
+      <div class="guidance-sub">
+        <div class="guidance-sub-title">Affirmation</div>
+        <div class="guidance-sub-body" style="font-style:italic">${g.affirmation}</div>
+      </div>
+    </div>
+    <div class="guidance-sub" style="margin-top:1rem;background:var(--plum);border-radius:8px;padding:1rem 1.2rem">
+      <div class="guidance-sub-title">For your chart specifically</div>
+      <div class="guidance-sub-body" style="font-style:italic">${g.yourChart}</div>
+    </div>`;
+
+  // Moon in sign
+  const ms = MOON_SIGNS[sign] || {};
+  document.getElementById('transit-sign-card').innerHTML = `
+    <div class="sign-title">Moon in ${sign} — Transit Energy</div>
+    <div class="sign-body">
+      <p style="margin-bottom:.6rem"><strong style="color:var(--lav)">Energy:</strong> ${ms.energy || ''}</p>
+      <p><strong style="color:var(--lav)">Ritual focus:</strong> ${ms.ritual || ''}</p>
+      ${sign === 'Pisces' ? '<p style="margin-top:.7rem;font-style:italic;color:var(--gold-lt)">Moon in Pisces activates your natal Moon — this is your most personally resonant transit of the month. Psychic sensitivity is highest. Lean into it.</p>' : ''}
+      ${sign === 'Capricorn' ? '<p style="margin-top:.7rem;font-style:italic;color:var(--gold-lt)">Moon in Capricorn activates your 12th house stellium — your hidden magnetism and subconscious power are at peak availability. Use it.</p>' : ''}
+    </div>`;
+
+  // All phases wheel
+  const allPhasesContainer = document.getElementById('all-phases');
+  allPhasesContainer.innerHTML = ALL_PHASES.map((p, i) => `
+    <div class="phase-card ${i === phase.idx ? 'current-phase' : ''}">
+      <div class="pc-moon">${p.emoji}</div>
+      <div class="pc-name">${p.name}</div>
+      ${i === phase.idx ? '<div class="pc-current-tag">✦ You are here</div>' : ''}
+      <div class="pc-energy">${p.energy}</div>
+      <div class="pc-keywords">${p.keywords}</div>
+    </div>`).join('');
+}
+
+render();
+</script>
+</body>
+</html>
