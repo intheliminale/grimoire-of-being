@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Wheel of the Year — In The Liminale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --void:#080610;--deep:#120e22;--plum:#1e1630;--violet:#2e2048;
+    --vlt:#4a3468;--lav:#9878c0;--mist:#d0c4e8;--ivory:#ede8dc;
+    --amber:#c88a28;--gold:#e0a830;--gold-lt:#f8cc60;
+    --burg:#6a1e2e;--rose:#c04060;--shadow:rgba(8,6,16,0.7);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--void);color:var(--mist);font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;line-height:1.7;min-height:100vh}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
+
+  header{text-align:center;padding:4rem 2rem 2rem;position:relative;z-index:1}
+  header::after{content:'';display:block;width:220px;height:1px;background:linear-gradient(to right,transparent,var(--amber),transparent);margin:1.5rem auto 0}
+  .eyebrow{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.55em;text-transform:uppercase;color:var(--amber);margin-bottom:.8rem;opacity:.8}
+  h1{font-family:'Cinzel',serif;font-size:clamp(2rem,5vw,3rem);font-weight:400;color:var(--ivory);letter-spacing:.07em}
+  h1 em{display:block;font-family:'IM Fell English',serif;font-style:italic;font-size:.38em;color:var(--lav);margin-top:.4rem;letter-spacing:.06em;opacity:.85}
+
+  main{max-width:960px;margin:0 auto;padding:2rem 2rem 8rem;position:relative;z-index:1}
+  .section-label{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.48em;text-transform:uppercase;color:var(--amber);opacity:.8;margin-bottom:.4rem;text-align:center}
+  .rule{width:100%;height:1px;background:linear-gradient(to right,transparent,var(--vlt),transparent);margin:.4rem 0 2rem}
+
+  /* WHEEL */
+  .wheel-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:1rem}
+  #wheel-svg{width:100%;max-width:420px;height:auto}
+  .wheel-seg{cursor:pointer;transition:opacity .15s ease}
+  .wheel-seg:hover{opacity:.75}
+  .wheel-glyph{font-family:'Cinzel',serif;fill:var(--gold-lt);font-size:20px;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+  .wheel-label{font-family:'Cinzel',serif;fill:var(--mist);font-size:9px;letter-spacing:1px;text-anchor:middle;pointer-events:none;text-transform:uppercase}
+  .wheel-center-text{font-family:'Cinzel',serif;fill:var(--ivory);text-anchor:middle}
+  .wheel-marker{fill:var(--rose);filter:drop-shadow(0 0 6px rgba(192,64,96,0.8))}
+  .today-caption{font-family:'IM Fell English',serif;font-style:italic;color:var(--lav);text-align:center;font-size:15px;margin-top:.6rem}
+  .today-caption b{color:var(--gold-lt);font-style:normal;font-family:'Cinzel',serif;font-weight:400;letter-spacing:.03em}
+
+  /* SABBAT NAV STRIP */
+  .sabbat-strip{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin:2.5rem 0 3rem}
+  .sabbat-chip{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--lav);background:var(--deep);border:1px solid #4a346855;border-radius:20px;padding:.5rem 1rem;text-decoration:none;transition:border-color .15s ease,color .15s ease}
+  .sabbat-chip:hover,.sabbat-chip.active-chip{border-color:var(--gold);color:var(--gold-lt)}
+
+  /* SABBAT CARDS */
+  .sabbat-card{background:var(--deep);border:1px solid #c88a2833;border-radius:14px;margin-bottom:1.5rem;overflow:hidden;scroll-margin-top:20px}
+  .sabbat-head{padding:2rem 2rem 1.2rem;text-align:center;position:relative}
+  .sabbat-head::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(200,138,40,0.1), transparent 70%);pointer-events:none}
+  .sabbat-glyph-big{font-size:2.4rem;color:var(--gold);margin-bottom:.3rem;position:relative}
+  .sabbat-date{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.4em;text-transform:uppercase;color:var(--amber);opacity:.8;position:relative}
+  .sabbat-name{font-family:'Cinzel',serif;font-size:1.7rem;font-weight:400;color:var(--ivory);letter-spacing:.05em;margin:.3rem 0;position:relative}
+  .sabbat-subtitle{font-family:'IM Fell English',serif;font-style:italic;color:var(--lav);font-size:1rem;position:relative}
+
+  .tabs{display:flex;flex-wrap:wrap;border-top:1px solid #4a346840;border-bottom:1px solid #4a346840}
+  .tab-btn{flex:1 1 auto;min-width:110px;background:none;border:none;color:var(--lav);font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;padding:.9rem .5rem;cursor:pointer;border-bottom:2px solid transparent;transition:color .15s ease,border-color .15s ease}
+  .tab-btn.active{color:var(--gold-lt);border-bottom-color:var(--gold)}
+  .tab-panel{display:none;padding:1.8rem 2rem 2.2rem}
+  .tab-panel.active{display:block}
+  .tab-panel p{margin-bottom:.9rem}
+  .tab-panel p:last-child{margin-bottom:0}
+  .tab-panel .em{color:var(--gold-lt);font-style:italic}
+
+  .corr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1rem}
+  .corr-item{background:var(--plum);border-radius:10px;padding:.9rem 1rem}
+  .corr-label{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);margin-bottom:.3rem}
+  .corr-value{font-size:.95rem;color:var(--ivory)}
+
+  .culture-grid{display:grid;grid-template-columns:1fr;gap:1rem}
+  .culture-item{border-left:2px solid var(--vlt);padding-left:1rem}
+  .culture-item .c-name{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--rose);margin-bottom:.25rem}
+
+  @media(min-width:640px){ .culture-grid{grid-template-columns:1fr 1fr} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">The Turning</div>
+  <h1>Wheel of the Year<em>eight fires, one circle</em></h1>
+</header>
+
+<main>
+
+  <div class="section-label">Where We Stand</div>
+  <div class="rule"></div>
+
+  <div class="wheel-wrap">
+    <svg id="wheel-svg" viewBox="0 0 400 400">
+      <circle cx="200" cy="200" r="185" fill="none" stroke="#4a346855" stroke-width="1"/>
+      <circle cx="200" cy="200" r="130" fill="none" stroke="#4a346833" stroke-width="1"/>
+      <g id="wheel-segments"></g>
+      <g id="wheel-marker"></g>
+      <circle cx="200" cy="200" r="58" fill="#120e22" stroke="#c88a2855" stroke-width="1"/>
+      <text x="200" y="196" class="wheel-center-text" font-size="11" letter-spacing="2" opacity="0.75">SERATH RAEN</text>
+      <text x="200" y="214" class="wheel-center-text" font-size="9" letter-spacing="1" fill="#9878c0" opacity="0.8">born at the threshold</text>
+    </svg>
+    <div class="today-caption" id="todayCaption">Loading today's position…</div>
+  </div>
+
+  <div class="sabbat-strip" id="sabbatStrip"></div>
+
+  <div id="sabbatCards"></div>
+
+</main>
+
+<script>
+/* ===================== DATA ===================== */
+const SABBATS = [
+  {
+    id:"samhain", name:"Samhain", date:"October 31", glyph:"☠", angleDay:[10,31],
+    subtitle:"The veil thins",
+    meaning:"The year's death. Samhain marks the Celtic new year and the point where the boundary between the living and the dead grows thin enough to cross. It is harvest's end and the descent into the dark half of the year — the witches' new year, when the ancestors are closest and grief is given a room to sit in.",
+    ritual:"Set a place at your table for the dead — a plate, a glass, a chair left open. Light a candle in a west-facing window to guide wandering spirits home, and let it burn through the night before snuffing it. Speak the names of your dead aloud, three times each, and listen for what returns in the silence after.",
+    chartResonance:"Your Pluto sits conjunct the Midheaven in Scorpio — the sign that rules this sabbat outright. Death, transformation, and legacy are not seasonal for you; they are your public destiny signature. Samhain is the one night a year the rest of the world catches up to what your chart does constantly. Hekate, already central to your practice, is at her most reachable now — Kleidoukhos, key-holder, standing at exactly this threshold.",
+    correspondences:{Colors:"black, deep orange, violet",Herbs:"mugwort, wormwood, rosemary",Crystals:"obsidian, smoky quartz, jet",Deities:"Hekate, the Morrígan, Anubis, ancestors"},
+    culture:[
+      {name:"West African / Yoruba",text:"Egúngún masquerade festivals honor ancestral spirits who return to walk among the living, echoing Samhain's thinned veil and the duty to feed and acknowledge the dead."},
+      {name:"Ancient Egyptian",text:"The Wag Festival and rites for the akh (transfigured dead) centered on maintaining active relationship with ancestors through offerings — not memory, but ongoing kinship."},
+      {name:"Greco-Roman",text:"The Parentalia and Lemuria honored family dead and placated restless spirits with offerings of food and wine, paralleling the Samhain dumb supper."},
+      {name:"Global",text:"Día de los Muertos (Mexico) and Obon (Japan) both center this same axis — a season when the dead are invited close rather than warded off."}
+    ]
+  },
+  {
+    id:"yule", name:"Yule", date:"December 21", glyph:"❄", angleDay:[12,21],
+    subtitle:"The return of the light",
+    meaning:"The longest night. Yule is the winter solstice — the exact turning point where darkness reaches its maximum and begins, degree by degree, to recede. It is a festival of held breath and quiet faith: the sun is reborn tonight, though you won't see proof of it for weeks.",
+    ritual:"Burn a Yule log — even a single log in a fireproof dish will do — and carve or draw a sigil of what you want to grow into the returning light onto it before burning. Keep vigil through the longest dark, even briefly, and greet the first light of the solstice morning with a spoken welcome.",
+    chartResonance:"Yule falls deep in Capricorn season — the sign holding your densest stellium (Venus, Mars, Uranus, Neptune, North Node) in the hidden 12th house. This is your most private, subconscious terrain, and the solstice's held-breath quality mirrors it exactly: power gathering out of sight before it's ready to be seen. Saturn, your chart ruler, is exalted in this season's energy of discipline and quiet endurance.",
+    correspondences:{Colors:"deep red, evergreen, silver, gold",Herbs:"holly, ivy, pine, cinnamon",Crystals:"clear quartz, garnet, bloodstone",Deities:"Sol Invictus, Frau Holle, the Oak King"},
+    culture:[
+      {name:"West African / Yoruba",text:"Solar reverence appears through Orisha Ṣàngó and the broader cosmology of returning cyclical power, though West African solstice tradition is less codified than equinox/harvest rites."},
+      {name:"Ancient Egyptian",text:"The rebirth of Ra at dawn was a daily ritual echo of the solstice's yearly one — the sun god's nightly journey through the underworld and triumphant return."},
+      {name:"Greco-Roman",text:"Saturnalia (Rome) inverted social order in the dark of the year, while the birth of Sol Invictus on December 25th directly parallels Yule's returning-light theme."},
+      {name:"Global",text:"Dongzhi (China) and Shab-e Yalda (Persia) both mark the solstice as the turn from yin to yang, dark to light, honored with family gathering and shared food."}
+    ]
+  },
+  {
+    id:"imbolc", name:"Imbolc", date:"February 1", glyph:"🕯", angleDay:[2,1],
+    subtitle:"The first stirring",
+    meaning:"Beneath the frost, the first movement. Imbolc falls at the midpoint between solstice and equinox — too early for visible spring, but the exact moment life begins stirring underground. It is Brigid's festival: the flame kept through winter, tended rather than roaring.",
+    ritual:"Light a single candle for Brigid and let it burn while you write down what you are ready to begin — even a first sentence counts as a beginning. Cleanse your altar and workspace fully; Imbolc is traditionally a threshold-clearing sabbat before the year's real growth starts.",
+    chartResonance:"This sabbat lands directly in your natal Sun's sign and house — Aquarius, 1st house — and sits only days before your actual birthday and solar return. Imbolc's 'first stirring' is not metaphor for you; it is the literal astrological lead-in to your own personal new year. Your current Personal Year 9 closes and Year 1 begins right at this seam, making this Imbolc, specifically the one before February 2027, an extraordinary confluence worth building toward now.",
+    correspondences:{Colors:"white, pale yellow, light green",Herbs:"snowdrop, angelica, basil",Crystals:"amethyst, moonstone, clear quartz",Deities:"Brigid, Bast, Vesta"},
+    culture:[
+      {name:"West African / Yoruba",text:"Firekeeping and hearth-devotion traditions around Orisha of home and craft resonate with Brigid's own domain — the tended flame as sacred labor, not spectacle."},
+      {name:"Ancient Egyptian",text:"Bast, guardian of hearth and home, and the domestic flame rituals of household shrines parallel Imbolc's intimate, small-scale fire-tending."},
+      {name:"Greco-Roman",text:"The Vestal flame of Rome — perpetually tended, never allowed to go dark — is the closest direct parallel to Brigid's undying hearth fire."},
+      {name:"Global",text:"Setsubun (Japan) marks a similar early-February threshold of purification before spring, driving out the old to make room for the new."}
+    ]
+  },
+  {
+    id:"ostara", name:"Ostara", date:"March 20", glyph:"⚖", angleDay:[3,20],
+    subtitle:"Perfect balance",
+    meaning:"Light and dark stand equal, and light is about to win. The spring equinox is a hinge point — the last moment of true balance before the year tips decisively toward growth. It is a sabbat of planting, both literal and symbolic: what's sown now determines the harvest.",
+    ritual:"Plant something real — a seed, a bulb, even an herb cutting on a windowsill — and name it for an intention as you place it in soil. Balance your altar visually, light and dark items in equal number, and sit with what feels unresolved in your own life before deciding what tips the scale.",
+    chartResonance:"Equinoxes are ruled by cardinal, balancing energy — a natural match for your Capricorn Rising (cardinal, Saturn-ruled, oriented toward structure and fair accounting). Ostara asks what needs to be brought into equilibrium, which is close kin to Saturn's own governing question. Your earth-dominant chart (15 placements) also makes literal planting an unusually potent working for you — this is a sabbat your chart is built for.",
+    correspondences:{Colors:"pastel green, pink, yellow",Herbs:"daffodil, tulip, honeysuckle",Crystals:"rose quartz, aventurine, citrine",Deities:"Eostre, Persephone (ascending), Ma'at"},
+    culture:[
+      {name:"West African / Yoruba",text:"Balance deities and the concept of ìwà pẹ̀lẹ́ (gentle, balanced character) echo the equinox's core value of equilibrium as a moral and spiritual state."},
+      {name:"Ancient Egyptian",text:"Ma'at — truth, balance, and cosmic order personified — is the clearest possible parallel; her feather-weighing scale is the equinox made into myth."},
+      {name:"Greco-Roman",text:"Persephone's ascent from the underworld to reunite with Demeter was timed to spring's return, marking the equinox as the moment growth becomes possible again."},
+      {name:"Global",text:"Nowruz (Persian New Year) falls on the spring equinox exactly, framing this balance point as a true new beginning across an enormous cultural range."}
+    ]
+  },
+  {
+    id:"beltane", name:"Beltane", date:"May 1", glyph:"♦", angleDay:[5,1],
+    subtitle:"The fires of union",
+    meaning:"Life at full pulse. Beltane is a fire festival of fertility, union, and unguarded vitality — the counterpart to Samhain on the opposite side of the wheel. Where Samhain opens the door to the dead, Beltane opens the door to desire, creation, and the erotic as sacred force.",
+    ritual:"Light two candles side by side and let their flames lean toward each other as they burn — a small working for union of any kind, romantic or creative. Wear or carry something red. If you can, step outside barefoot and let skin touch grass; Beltane rewards embodiment more than any other sabbat.",
+    chartResonance:"Beltane's fire-and-fertility charge lands directly on your Venus-Mars conjunction in Capricorn, 12th house — desire that operates beneath the surface, magnetic rather than performative. This is exactly the energy your sweetener jar work draws on. Beltane is the sabbat most worth building an active, embodied ritual around, specifically because your natural mode with this placement is hidden; the holiday gives you permission to let it surface.",
+    correspondences:{Colors:"red, green, white",Herbs:"hawthorn, rose, rowan",Crystals:"carnelian, rose quartz, garnet",Deities:"Aphrodite, Freyja, Oshun"},
+    culture:[
+      {name:"West African / Yoruba",text:"Oshun, Orisha of love, fertility, and sweet waters, governs precisely this territory — sensual vitality as sacred, generative power, not indulgence."},
+      {name:"Ancient Egyptian",text:"Hathor, goddess of love, music, and fertility, presided over festivals of unrestrained joy and union that share Beltane's uninhibited spirit."},
+      {name:"Greco-Roman",text:"The Floralia honored Flora with several days of flowers, wine, and open sensuality — Rome's own fire-festival cousin to Beltane."},
+      {name:"Global",text:"Walpurgisnacht (Germanic Europe) falls on the same night, with bonfires and a similarly charged, boundary-loosened atmosphere."}
+    ]
+  },
+  {
+    id:"litha", name:"Litha", date:"June 21", glyph:"☀", angleDay:[6,21],
+    subtitle:"The sun at its height",
+    meaning:"Peak light, peak power — and the moment it begins to wane. The summer solstice is the year's longest day, a celebration of abundance and full expression, but it carries an undertone the equinoxes don't: from here, the light recedes. Litha is triumph shadowed by the knowledge of turning.",
+    ritual:"Rise to greet sunrise if you can, or simply step into full sun at midday and let it warm you deliberately, as an offering received rather than weather endured. Burn something you're ready to release into a bonfire or candle flame — Litha's fire is generous but also a fire of letting go.",
+    chartResonance:"With zero fire in your natal chart, Litha is the one sabbat that asks you to work with an element you weren't born holding. That's not a deficiency to correct — it's an invitation to borrow. Your Aquarius stellium already channels fire functionally through intellect and unconventional action; Litha is the day to let that borrowed fire become physical and outward instead of internal.",
+    correspondences:{Colors:"gold, orange, bright yellow",Herbs:"St. John's Wort, sunflower, chamomile",Crystals:"citrine, sunstone, tiger's eye",Deities:"Ra, Sol, Áine"},
+    culture:[
+      {name:"West African / Yoruba",text:"Solar and sky-father figures across West African cosmology mark peak-power moments with communal celebration, echoing Litha's abundant, outward-facing joy."},
+      {name:"Ancient Egyptian",text:"Ra at his zenith — the sun god at full noon strength — is the clearest mythic image for the solstice's maximum-light moment."},
+      {name:"Greco-Roman",text:"Vestalia (Rome) and various solar festivals across Greek city-states marked the solstice with fire-tending and communal feasting."},
+      {name:"Global",text:"Midsummer celebrations across Scandinavia involve bonfires, dancing until near-dawn, and flower crowns — among the most widely preserved solstice traditions still practiced today."}
+    ]
+  },
+  {
+    id:"lughnasadh", name:"Lughnasadh", date:"August 1", glyph:"🌾", angleDay:[8,1],
+    subtitle:"The first harvest",
+    meaning:"The grain is cut. Lughnasadh is the first of three harvest festivals, named for the god Lugh and traditionally marked by games, competition, and the bittersweet recognition that abundance requires something to die first. Bread made from the new grain is the sabbat's oldest offering.",
+    ritual:"Bake or buy bread and share it — eating it alone misses the point; Lughnasadh is a harvest meant to be witnessed by others. Name one thing in your life that is ready to be 'cut' — completed, harvested, taken off the vine — even if the cutting is bittersweet.",
+    chartResonance:"Ceres sits within your Capricorn 12th house stellium, tying labor and nourishment directly to your hidden, subconscious terrain — you tend to harvest quietly, behind the scenes, before anyone sees the yield. This sabbat pairs naturally with your existing Lughnasadh Spirit Feast practice; the two aren't separate workings so much as the same instinct expressed twice.",
+    correspondences:{Colors:"golden yellow, orange, wheat brown",Herbs:"wheat, corn, sunflower",Crystals:"citrine, amber, peridot",Deities:"Lugh, Demeter, the Corn Mother"},
+    culture:[
+      {name:"West African / Yoruba",text:"New Yam festivals across West Africa (notably Igbo tradition) center on the first harvest of yam as sacred, with communal feasting and offerings before the yam can be eaten by anyone."},
+      {name:"Ancient Egyptian",text:"The flooding and receding of the Nile governed harvest timing directly, with festivals honoring Osiris as the grain that dies and returns."},
+      {name:"Greco-Roman",text:"The Thesmophoria honored Demeter and the first grain harvest with rites restricted to women, emphasizing fertility of both land and body."},
+      {name:"Global",text:"Lammas (the Christianized English name for this same date) preserves the bread-offering tradition almost unchanged into the present."}
+    ]
+  },
+  {
+    id:"mabon", name:"Mabon", date:"September 22", glyph:"🍂", angleDay:[9,22],
+    subtitle:"The second balance",
+    meaning:"The equinox returns, but this time light is losing. Mabon is the second harvest and the autumn equinox — a mirror of Ostara, but tilting toward dark instead of light. It is a sabbat of gratitude and reckoning: what did the year actually yield, and what are you willing to let go of before winter closes in.",
+    ritual:"Make a gratitude list with real specificity — not 'health' but the actual moment health mattered this year — and burn or bury it as an offering. Share a meal built from whatever feels seasonal and abundant right now, even if it's not literally homegrown.",
+    chartResonance:"Mabon falls in Libra, ruling your 7th house (Chiron, Vertex, retrograde Jupiter) — the house of partnership, mirrors, and what you learn through others. This is your most relational sabbat: the harvest question here isn't what you produced alone, but what your relationships this year actually taught or gave you. Jupiter retrograde in that house suggests the real gains are ones you have to look backward to fully see.",
+    correspondences:{Colors:"deep orange, burgundy, brown, gold",Herbs:"sage, myrrh, oak leaf",Crystals:"carnelian, lapis lazuli, amber",Deities:"Persephone (descending), Ma'at, Modron"},
+    culture:[
+      {name:"West African / Yoruba",text:"Harvest gratitude and ancestor-adjacent thanksgiving rites across West African tradition mirror Mabon's dual focus on abundance and what's owed to what came before."},
+      {name:"Ancient Egyptian",text:"Ma'at's balance returns here as autumn's counterpart to Ostara — order maintained even as the world visibly tips toward decline."},
+      {name:"Greco-Roman",text:"Persephone's descent back to the underworld, grieved by Demeter, was mythically timed to autumn — the equinox as the moment abundance is willingly surrendered."},
+      {name:"Global",text:"Chuseok (Korea) and the Mid-Autumn Festival (China) both center the same September full-harvest gratitude, with family gathering and moon-viewing."}
+    ]
+  }
+];
+
+/* ===================== WHEEL RENDER ===================== */
+const svgNS = "http://www.w3.org/2000/svg";
+const CX = 200, CY = 200, R_OUTER = 185, R_INNER = 130, R_GLYPH = 158, R_LABEL = 178;
+
+function polar(cx, cy, r, angleRad){
+  return { x: cx + r*Math.cos(angleRad), y: cy + r*Math.sin(angleRad) };
+}
+
+function renderWheel(){
+  const segGroup = document.getElementById('wheel-segments');
+  SABBATS.forEach((s, i) => {
+    const startA = (-90 + i*45 - 22.5) * (Math.PI/180);
+    const endA = (-90 + i*45 + 22.5) * (Math.PI/180);
+    const p1 = polar(CX,CY,R_OUTER,startA);
+    const p2 = polar(CX,CY,R_OUTER,endA);
+    const p3 = polar(CX,CY,R_INNER,endA);
+    const p4 = polar(CX,CY,R_INNER,startA);
+    const path = document.createElementNS(svgNS,'path');
+    const d = `M ${p1.x} ${p1.y} A ${R_OUTER} ${R_OUTER} 0 0 1 ${p2.x} ${p2.y} L ${p3.x} ${p3.y} A ${R_INNER} ${R_INNER} 0 0 0 ${p4.x} ${p4.y} Z`;
+    path.setAttribute('d', d);
+    path.setAttribute('fill', i % 2 === 0 ? '#1e163044' : '#2e204833');
+    path.setAttribute('stroke', '#4a346840');
+    path.setAttribute('stroke-width', '1');
+    path.setAttribute('class', 'wheel-seg');
+    path.setAttribute('data-id', s.id);
+    path.addEventListener('click', () => selectSabbat(s.id, true));
+    segGroup.appendChild(path);
+
+    const glyphPos = polar(CX,CY,R_GLYPH,(-90+i*45)*(Math.PI/180));
+    const glyphText = document.createElementNS(svgNS,'text');
+    glyphText.setAttribute('x', glyphPos.x);
+    glyphText.setAttribute('y', glyphPos.y - 6);
+    glyphText.setAttribute('class','wheel-glyph');
+    glyphText.textContent = s.glyph;
+    segGroup.appendChild(glyphText);
+
+    const labelPos = polar(CX,CY,R_LABEL,(-90+i*45)*(Math.PI/180));
+    const labelText = document.createElementNS(svgNS,'text');
+    labelText.setAttribute('x', labelPos.x);
+    labelText.setAttribute('y', labelPos.y + 18);
+    labelText.setAttribute('class','wheel-label');
+    labelText.textContent = s.name;
+    segGroup.appendChild(labelText);
+  });
+}
+
+function dayOfYear(month, day, year){
+  return Math.floor((Date.UTC(year, month-1, day) - Date.UTC(year,0,1)) / 86400000);
+}
+
+function renderMarker(){
+  const now = new Date();
+  const year = now.getFullYear();
+  const todayDOY = dayOfYear(now.getMonth()+1, now.getDate(), year);
+
+  const points = SABBATS.map((s,i) => ({
+    idx:i, s, doy: dayOfYear(s.angleDay[0], s.angleDay[1], year)
+  })).sort((a,b) => a.doy - b.doy);
+
+  let prev = points[points.length-1], next = points[0];
+  let prevDoy = prev.doy - 365, nextDoy = next.doy;
+  for(let i=0;i<points.length;i++){
+    if(points[i].doy <= todayDOY){ prev = points[i]; prevDoy = points[i].doy; }
+    if(points[i].doy > todayDOY){ next = points[i]; nextDoy = points[i].doy; break; }
+  }
+  if(prevDoy > todayDOY) prevDoy -= 365;
+
+  const span = nextDoy - prevDoy;
+  const progress = span > 0 ? (todayDOY - prevDoy) / span : 0;
+
+  const prevAngleDeg = -90 + prev.idx*45;
+  let nextAngleDeg = -90 + next.idx*45;
+  if(next.idx < prev.idx) nextAngleDeg += 360;
+  const markerAngleDeg = prevAngleDeg + (nextAngleDeg - prevAngleDeg) * progress;
+  const markerRad = markerAngleDeg * (Math.PI/180);
+  const pos = polar(CX,CY,(R_OUTER+R_INNER)/2, markerRad);
+
+  const markerGroup = document.getElementById('wheel-marker');
+  markerGroup.innerHTML = '';
+  const dot = document.createElementNS(svgNS,'circle');
+  dot.setAttribute('cx', pos.x);
+  dot.setAttribute('cy', pos.y);
+  dot.setAttribute('r', 7);
+  dot.setAttribute('class', 'wheel-marker');
+  markerGroup.appendChild(dot);
+
+  const daysToNext = Math.round(span - (todayDOY - prevDoy));
+  const daysSincePrev = Math.round(todayDOY - prevDoy);
+  document.getElementById('todayCaption').innerHTML =
+    `<b>${daysSincePrev} day${daysSincePrev===1?'':'s'}</b> past ${prev.s.name} · <b>${daysToNext} day${daysToNext===1?'':'s'}</b> until ${next.s.name}`;
+}
+
+/* ===================== CARDS ===================== */
+function renderStrip(){
+  const strip = document.getElementById('sabbatStrip');
+  SABBATS.forEach(s => {
+    const a = document.createElement('a');
+    a.href = '#' + s.id;
+    a.className = 'sabbat-chip';
+    a.id = 'chip-' + s.id;
+    a.textContent = s.glyph + ' ' + s.name;
+    a.addEventListener('click', (e) => { e.preventDefault(); selectSabbat(s.id, true); });
+    strip.appendChild(a);
+  });
+}
+
+const TABS = [
+  {key:'meaning', label:'Meaning'},
+  {key:'ritual', label:'Ritual'},
+  {key:'chartResonance', label:'Chart Resonance'},
+  {key:'correspondences', label:'Correspondences'},
+  {key:'culture', label:'Cultural Parallels'}
+];
+
+function renderCards(){
+  const container = document.getElementById('sabbatCards');
+  SABBATS.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'sabbat-card';
+    card.id = s.id;
+
+    const head = document.createElement('div');
+    head.className = 'sabbat-head';
+    head.innerHTML = `
+      <div class="sabbat-glyph-big">${s.glyph}</div>
+      <div class="sabbat-date">${s.date}</div>
+      <div class="sabbat-name">${s.name}</div>
+      <div class="sabbat-subtitle">${s.subtitle}</div>
+    `;
+    card.appendChild(head);
+
+    const tabRow = document.createElement('div');
+    tabRow.className = 'tabs';
+    TABS.forEach((t,i) => {
+      const btn = document.createElement('button');
+      btn.className = 'tab-btn' + (i===0 ? ' active':'');
+      btn.textContent = t.label;
+      btn.dataset.tab = t.key;
+      btn.addEventListener('click', () => {
+        card.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        card.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+        btn.classList.add('active');
+        card.querySelector(`.tab-panel[data-tab="${t.key}"]`).classList.add('active');
+      });
+      tabRow.appendChild(btn);
+    });
+    card.appendChild(tabRow);
+
+    const meaningPanel = document.createElement('div');
+    meaningPanel.className = 'tab-panel active';
+    meaningPanel.dataset.tab = 'meaning';
+    meaningPanel.innerHTML = `<p>${s.meaning}</p>`;
+    card.appendChild(meaningPanel);
+
+    const ritualPanel = document.createElement('div');
+    ritualPanel.className = 'tab-panel';
+    ritualPanel.dataset.tab = 'ritual';
+    ritualPanel.innerHTML = `<p>${s.ritual}</p>`;
+    card.appendChild(ritualPanel);
+
+    const chartPanel = document.createElement('div');
+    chartPanel.className = 'tab-panel';
+    chartPanel.dataset.tab = 'chartResonance';
+    chartPanel.innerHTML = `<p>${s.chartResonance}</p>`;
+    card.appendChild(chartPanel);
+
+    const corrPanel = document.createElement('div');
+    corrPanel.className = 'tab-panel';
+    corrPanel.dataset.tab = 'correspondences';
+    let corrHTML = '<div class="corr-grid">';
+    for(const [label, value] of Object.entries(s.correspondences)){
+      corrHTML += `<div class="corr-item"><div class="corr-label">${label}</div><div class="corr-value">${value}</div></div>`;
+    }
+    corrHTML += '</div>';
+    corrPanel.innerHTML = corrHTML;
+    card.appendChild(corrPanel);
+
+    const culturePanel = document.createElement('div');
+    culturePanel.className = 'tab-panel';
+    culturePanel.dataset.tab = 'culture';
+    let cultureHTML = '<div class="culture-grid">';
+    s.culture.forEach(c => {
+      cultureHTML += `<div class="culture-item"><div class="c-name">${c.name}</div><div>${c.text}</div></div>`;
+    });
+    cultureHTML += '</div>';
+    culturePanel.innerHTML = cultureHTML;
+    card.appendChild(culturePanel);
+
+    container.appendChild(card);
+  });
+}
+
+function selectSabbat(id, scroll){
+  document.querySelectorAll('.sabbat-chip').forEach(c => c.classList.remove('active-chip'));
+  const chip = document.getElementById('chip-' + id);
+  if(chip) chip.classList.add('active-chip');
+  if(scroll){
+    const card = document.getElementById(id);
+    if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
+renderWheel();
+renderMarker();
+renderStrip();
+renderCards();
+</script>
+
+<!-- ITL-NAV: floating cross-page navigation -->
+<style>
+  #itl-nav-fab{
+    position:fixed;bottom:22px;right:20px;z-index:9999;
+    width:52px;height:52px;border-radius:50%;
+    background:#16131f;border:1px solid rgba(212,175,122,0.4);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 18px rgba(0,0,0,0.5);
+    cursor:pointer;font-size:22px;color:#d4af7a;
+    font-family:'Cormorant Garamond',serif;
+    transition:transform .15s ease, background .15s ease;
+  }
+  #itl-nav-fab:active{transform:scale(0.92);background:#1e1a2c;}
+  #itl-nav-overlay{
+    position:fixed;inset:0;z-index:9998;
+    background:rgba(6,5,10,0.72);
+    backdrop-filter:blur(2px);
+    opacity:0;pointer-events:none;
+    transition:opacity .18s ease;
+  }
+  #itl-nav-overlay.open{opacity:1;pointer-events:auto;}
+  #itl-nav-sheet{
+    position:fixed;left:0;right:0;bottom:0;z-index:9999;
+    background:#0f0c17;border-top:1px solid rgba(184,169,217,0.18);
+    border-radius:20px 20px 0 0;
+    padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+    transform:translateY(100%);
+    transition:transform .22s ease;
+    max-width:560px;margin:0 auto;
+    box-shadow:0 -10px 30px rgba(0,0,0,0.5);
+  }
+  #itl-nav-overlay.open #itl-nav-sheet{transform:translateY(0);}
+  #itl-nav-sheet .itl-nav-title{
+    font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:3px;
+    text-transform:uppercase;color:#a8895e;text-align:center;
+    margin-bottom:14px;
+  }
+  #itl-nav-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:9px;
+  }
+  #itl-nav-grid a{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:6px;text-decoration:none;color:#ede9f0;
+    background:#16131f;border:1px solid rgba(184,169,217,0.14);
+    border-radius:13px;padding:14px 4px;
+    font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.5px;
+    line-height:1.3;text-align:center;
+  }
+  #itl-nav-grid a.itl-current{
+    border-color:#d4af7a;background:#1c1830;
+  }
+  #itl-nav-grid a .itl-glyph{font-size:19px;color:#d4af7a;}
+  #itl-nav-home{
+    display:block;text-align:center;margin-top:14px;
+    font-family:'IM Fell English',serif;font-style:italic;font-size:13px;
+    color:#8b8896;text-decoration:none;
+  }
+</style>
+<button id="itl-nav-fab" aria-label="Open navigation">✦</button>
+<div id="itl-nav-overlay">
+  <div id="itl-nav-sheet">
+    <div class="itl-nav-title">Descend</div>
+    <div id="itl-nav-grid">
+      <a href="my-astrology.html"><span class="itl-glyph">☉</span>Natal Portrait</a>
+      <a href="tarot.html"><span class="itl-glyph">🜁</span>Tarot</a>
+      <a href="lunar-phases.html"><span class="itl-glyph">☽</span>Lunar Phases</a>
+      <a href="weekly-astrology.html"><span class="itl-glyph">✦</span>Weekly Astrology</a>
+      <a href="solar-cycles.html"><span class="itl-glyph">☀</span>Solar Cycles</a>
+      <a href="wheel-of-the-year.html"><span class="itl-glyph">⊕</span>Wheel of the Year</a>
+      <a href="numerology.html"><span class="itl-glyph">Ⅺ</span>Numerology</a>
+      <a href="crystal-compendium.html"><span class="itl-glyph">◈</span>Crystal Compendium</a>
+      <a href="sigil-generator.html"><span class="itl-glyph">✧</span>Sigil Generator</a>
+    </div>
+    <a id="itl-nav-home" href="index.html">↞ back to the hub</a>
+  </div>
+</div>
+<script>
+(function(){
+  var fab = document.getElementById('itl-nav-fab');
+  var overlay = document.getElementById('itl-nav-overlay');
+  fab.addEventListener('click', function(){ overlay.classList.add('open'); });
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay) overlay.classList.remove('open');
+  });
+  var here = location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('#itl-nav-grid a').forEach(function(a){
+    if(a.getAttribute('href') === here) a.classList.add('itl-current');
+  });
+})();
+</script>
+<!-- /ITL-NAV -->
+</body>
+</html>
