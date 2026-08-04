@@ -354,7 +354,7 @@ Respond in valid JSON only, no markdown:
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-5',
         max_tokens: 3000,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -517,7 +517,7 @@ Be direct, warm, and chart-specific. Reference her actual placements. No fluff.`
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-5',
         max_tokens: 800,
         messages: [{ role: 'user', content: prompt }]
       })
