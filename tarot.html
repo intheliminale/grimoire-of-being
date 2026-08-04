@@ -523,7 +523,7 @@ READING STYLE:
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-5',
-        max_tokens: 2000,
+        max_tokens: 4000,
         system: systemPrompt,
         messages: [{ role: 'user', content: userContent }]
       })
@@ -532,7 +532,9 @@ READING STYLE:
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
 
-    const text = data.content[0].text;
+    const textBlock = data.content.find(b => b.type === 'text');
+    if (!textBlock) throw new Error('No text response received — try again.');
+    const text = textBlock.text;
     displayReading(text);
 
   } catch(err) {
