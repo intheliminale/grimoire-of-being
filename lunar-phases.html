@@ -530,5 +530,97 @@ function render() {
 
 render();
 </script>
+
+<!-- ITL-NAV: floating cross-page navigation -->
+<style>
+  #itl-nav-fab{
+    position:fixed;bottom:22px;right:20px;z-index:9999;
+    width:52px;height:52px;border-radius:50%;
+    background:#16131f;border:1px solid rgba(212,175,122,0.4);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 18px rgba(0,0,0,0.5);
+    cursor:pointer;font-size:22px;color:#d4af7a;
+    font-family:'Cormorant Garamond',serif;
+    transition:transform .15s ease, background .15s ease;
+  }
+  #itl-nav-fab:active{transform:scale(0.92);background:#1e1a2c;}
+  #itl-nav-overlay{
+    position:fixed;inset:0;z-index:9998;
+    background:rgba(6,5,10,0.72);
+    backdrop-filter:blur(2px);
+    opacity:0;pointer-events:none;
+    transition:opacity .18s ease;
+  }
+  #itl-nav-overlay.open{opacity:1;pointer-events:auto;}
+  #itl-nav-sheet{
+    position:fixed;left:0;right:0;bottom:0;z-index:9999;
+    background:#0f0c17;border-top:1px solid rgba(184,169,217,0.18);
+    border-radius:20px 20px 0 0;
+    padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+    transform:translateY(100%);
+    transition:transform .22s ease;
+    max-width:560px;margin:0 auto;
+    box-shadow:0 -10px 30px rgba(0,0,0,0.5);
+  }
+  #itl-nav-overlay.open #itl-nav-sheet{transform:translateY(0);}
+  #itl-nav-sheet .itl-nav-title{
+    font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:3px;
+    text-transform:uppercase;color:#a8895e;text-align:center;
+    margin-bottom:14px;
+  }
+  #itl-nav-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:9px;
+  }
+  #itl-nav-grid a{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:6px;text-decoration:none;color:#ede9f0;
+    background:#16131f;border:1px solid rgba(184,169,217,0.14);
+    border-radius:13px;padding:14px 4px;
+    font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.5px;
+    line-height:1.3;text-align:center;
+  }
+  #itl-nav-grid a.itl-current{
+    border-color:#d4af7a;background:#1c1830;
+  }
+  #itl-nav-grid a .itl-glyph{font-size:19px;color:#d4af7a;}
+  #itl-nav-home{
+    display:block;text-align:center;margin-top:14px;
+    font-family:'IM Fell English',serif;font-style:italic;font-size:13px;
+    color:#8b8896;text-decoration:none;
+  }
+</style>
+<button id="itl-nav-fab" aria-label="Open navigation">✦</button>
+<div id="itl-nav-overlay">
+  <div id="itl-nav-sheet">
+    <div class="itl-nav-title">Descend</div>
+    <div id="itl-nav-grid">
+      <a href="my-astrology.html"><span class="itl-glyph">☉</span>Natal Portrait</a>
+      <a href="tarot.html"><span class="itl-glyph">🜁</span>Tarot</a>
+      <a href="lunar-phases.html"><span class="itl-glyph">☽</span>Lunar Phases</a>
+      <a href="weekly-astrology.html"><span class="itl-glyph">✦</span>Weekly Astrology</a>
+      <a href="solar-cycles.html"><span class="itl-glyph">☀</span>Solar Cycles</a>
+      <a href="wheel-of-the-year.html"><span class="itl-glyph">⊕</span>Wheel of the Year</a>
+      <a href="numerology.html"><span class="itl-glyph">Ⅺ</span>Numerology</a>
+      <a href="crystal-compendium.html"><span class="itl-glyph">◈</span>Crystal Compendium</a>
+      <a href="sigil-generator.html"><span class="itl-glyph">✧</span>Sigil Generator</a>
+    </div>
+    <a id="itl-nav-home" href="index.html">↞ back to the hub</a>
+  </div>
+</div>
+<script>
+(function(){
+  var fab = document.getElementById('itl-nav-fab');
+  var overlay = document.getElementById('itl-nav-overlay');
+  fab.addEventListener('click', function(){ overlay.classList.add('open'); });
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay) overlay.classList.remove('open');
+  });
+  var here = location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('#itl-nav-grid a').forEach(function(a){
+    if(a.getAttribute('href') === here) a.classList.add('itl-current');
+  });
+})();
+</script>
+<!-- /ITL-NAV -->
 </body>
 </html>
