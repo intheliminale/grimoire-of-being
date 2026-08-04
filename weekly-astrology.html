@@ -350,7 +350,7 @@ Respond in valid JSON only, no markdown:
 }`;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('https://itl-grimoire-proxy.liasmbonilla.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -513,7 +513,7 @@ Write a direct, personal reading for this category on this specific day (3-4 par
 
 Be direct, warm, and chart-specific. Reference her actual placements. No fluff.`;
 
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('https://itl-grimoire-proxy.liasmbonilla.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
